@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "168551287179",
+    "project_id": "video-intelligence-4f110",
+    "storage_bucket": "video-intelligence-4f110.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168551287179:android:4b360c59f58ed4662f878e",
+        "android_client_info": {
+          "package_name": "com.bertino.capstone_video_analyzer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "168551287179-himl18d35ohmpbns0qpfvlss5f73s0k8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT1U6rpHTeRpSxx_MHFcUFoiuIiU2KawI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "168551287179-himl18d35ohmpbns0qpfvlss5f73s0k8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168551287179:android:c05cd93ea999fcf72f878e",
+        "android_client_info": {
+          "package_name": "com.bertino.video_intelligence_capstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "168551287179-himl18d35ohmpbns0qpfvlss5f73s0k8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT1U6rpHTeRpSxx_MHFcUFoiuIiU2KawI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "168551287179-himl18d35ohmpbns0qpfvlss5f73s0k8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

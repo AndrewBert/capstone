@@ -1,0 +1,11 @@
+Error about not having VS installed when running npm install -g firebase-tools. I think it still installed firebase
+
+
+
+ **************************************************************
+gyp ERR! find VS You need to install the latest version of Visual Studio
+gyp ERR! find VS including the "Desktop development with C++" workload.
+gyp ERR! find VS For more information consult the documentation at:
+gyp ERR! find VS https://github.com/nodejs/node-gyp#on-windows
+gyp ERR! find VS **************************************************************
+
