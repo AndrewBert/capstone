@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (_) => AuthService(FirebaseAuth.instance)
         ),
-        StreamProvider(create: (context) => context.read<AuthService>().authStateChanges)
+        StreamProvider(create: (context) => context.read<AuthService>().authStateChanges, initialData: null,)
       ],
       child: MaterialApp(
       title: 'Flutter Demo',
