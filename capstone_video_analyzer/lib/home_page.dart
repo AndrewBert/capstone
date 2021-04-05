@@ -16,22 +16,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   VideoPlayerController? _controller;
   VideoPlayerController? _toBeDisposed;
-  String? _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController maxWidthController = TextEditingController();
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
 
-  void _onImageButtonPressed(ImageSource source,
-      {BuildContext? context}) async {
+  void _onUploadButtonPressed() async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
     final PickedFile? file = await _picker.getVideo(
-        source: source, maxDuration: const Duration(seconds: 10));
+        source: ImageSource.gallery, maxDuration: const Duration(seconds: 10));
     await _playVideo(file);
-    var bucketUri = await uploadFile(file);
+
+    await uploadFile(file);
   }
 
   Future<void> _playVideo(PickedFile? file) async {
@@ -56,27 +55,9 @@ class _HomePageState extends State<HomePage> {
       ));
       return null;
     }
-
-    var fileName = (file.path.split('/').last);
-
-    // Create a Reference to the file
-    Reference ref =
-        FirebaseStorage.instance.ref().child('videos').child('/$fileName');
-
-    final metadata = SettableMetadata(
-        contentType: 'video/mp4',
-        customMetadata: {'picked-file-path': file.path});
-
-    ref.putFile(File(file.path), metadata);
-
-    var bucketPath = 'gs://video-intelligence-4f110.appspot.com/videos';
-
-    var filePathInStorage = '$bucketPath/$fileName';
-
-    return filePathInStorage;
   }
 
-   @override
+  @override
   void deactivate() {
     if (_controller != null) {
       _controller!.setVolume(0.0);
@@ -126,7 +107,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: () {}, child: Text("Upload")),
+            ElevatedButton(
+                onPressed: () => _onUploadButtonPressed(),
+                child: Text("Upload")),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: ElevatedButton(
