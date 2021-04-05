@@ -194,12 +194,12 @@ exports.makePreviewImage = functions.storage
     .onFinalize(async (object) => {
       await makePreviewImage(object);
     });
-exports.processVideoJson = functions.storage
-    .bucket(process.env.VIDEO_JSON_BUCKET)
-    .object()
-    .onFinalize(async (object) => {
-      await processVideoJson(object);
-    });
+// exports.processVideoJson = functions.storage
+//     .bucket(process.env.VIDEO_JSON_BUCKET)
+//     .object()
+//     .onFinalize(async (object) => {
+//       await processVideoJson(object);
+//     });
 
 /* Does what it says--takes a userid and a query and returns
 relevant video data */
