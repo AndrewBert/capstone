@@ -1,12 +1,12 @@
 import 'package:capstone_video_analyzer/auth_service.dart';
+import 'package:capstone_video_analyzer/gallery_page.dart';
 import 'package:capstone_video_analyzer/signIn_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page.dart';
-import 'upload_page.dart';
+import 'task_manager_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,17 +20,18 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-          create: (_) => AuthService(FirebaseAuth.instance)
-        ),
-        StreamProvider(create: (context) => context.read<AuthService>().authStateChanges, initialData: null)
+            create: (_) => AuthService(FirebaseAuth.instance)),
+        StreamProvider(
+            create: (context) => context.read<AuthService>().authStateChanges,
+            initialData: null)
       ],
       child: MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: AuthenticationWrapper(),
       ),
-      home: AuthenticationWrapper(),
-    ),
     );
   }
 }
@@ -41,7 +42,7 @@ class AuthenticationWrapper extends StatelessWidget {
     User? firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
-      return TaskManager();
+      return GalleryPage();
     }
     return SignInPage();
   }
