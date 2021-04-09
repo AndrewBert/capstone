@@ -124,7 +124,6 @@ class _GalleryPageState extends State<GalleryPage> {
       body: FutureBuilder(
         future: thumbnailFuture,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
             return Container(
                 child: GridView.builder(
                     itemCount: thumbnails.length,
@@ -137,15 +136,6 @@ class _GalleryPageState extends State<GalleryPage> {
                         child: thumbnailItem,
                       );
                     }));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-                height: MediaQuery.of(context).size.height / 1.25,
-                width: MediaQuery.of(context).size.width / 1.25,
-                child: CircularProgressIndicator());
-          }
-          return Container();
         },
       ),
     );
