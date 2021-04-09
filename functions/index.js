@@ -21,7 +21,8 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const utils = require('./utils');
-// const algolia = require('./algolia');
+const algolia = require('./algolia');
+const stripBom = require('strip-bom');
 
 require('dotenv').config();
 
@@ -151,7 +152,7 @@ async function processVideoJson(object) {
 
   const userid = object.name.split('/')[0];
   const videoid = object.name.split('/')[1].split('.')[0];
-  const json = JSON.parse(fs.readFileSync(tempFilePath));
+  const json = JSON.parse(fs.readFileSync(stripBom(tempFilePath)));
 
   // Parse annotaitons from output file
   const transcriptJson = utils.parseTranscript(json);

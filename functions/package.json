@@ -23,6 +23,7 @@
     "fluent-ffmpeg-extended": "^1.5.2",
     "hashcode": "^1.0.3",
     "node-forge": "^0.10.0",
+    "strip-bom": "^4.0.0",
     "uuid": "^8.1.0"
   },
   "private": true,
