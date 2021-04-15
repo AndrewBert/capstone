@@ -126,6 +126,52 @@ class ThumbCard extends StatelessWidget {
   }
 }
 
+class EmptyThumbCard extends StatelessWidget {
+  final double cardWidth;
+  const EmptyThumbCard(this.cardWidth);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: cardWidth,
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 3 / 2,
+              child: Stack(
+                children: <Widget>[
+                  Container(color: Colors.grey[200]),
+                  Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.red[100],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(5, 20, 5, 5),
+                child: Container(
+                    color: Colors.grey[300],
+                    width: cardWidth * 0.65,
+                    height: 20)),
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                child: Container(
+                    color: Colors.grey[300],
+                    width: cardWidth * 0.55,
+                    height: 20))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ThumbImage extends StatelessWidget {
   final String imageUrl;
   ThumbImage(this.imageUrl);
