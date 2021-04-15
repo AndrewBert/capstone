@@ -28,35 +28,75 @@ class GridWidget extends StatelessWidget {
 }
 
 class ThumbnailGrid extends StatefulWidget {
-  final Future<List<VideoData>> _queryResults;
+  final String query;
+  final double cardWidth;
 
-  ThumbnailGrid(this._queryResults);
+  ThumbnailGrid(this.query, this.cardWidth);
 
   @override
   _ThumbnailGridState createState() => _ThumbnailGridState();
 }
 
 class _ThumbnailGridState extends State<ThumbnailGrid> {
+  late Future<List<VideoData>> _queryResults;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     _queryResults = search(widget.query);
-    
   }
+
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        itemCount: widget._queryResults.length,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemBuilder: (BuildContext context, int index) {
-          final gridItem = widget._queryResults[index];
-          return Container(
-            child: Card(child: Text(widget._queryResults[index])),
-          );
+    return FutureBuilder<List<VideoData>>(
+        future: _queryResults,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<VideoData>> snapshot) {
+          if (snapshot.hasError) {
+            return SizedBox(
+                child: Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 60,
+            ));
+          }
+          return Column(children: <Widget>[
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Text(capitalize(widget.query),
+                        textAlign: TextAlign.left,
+                        style: Theme.of(context).textTheme.headline5))),
+            Expanded(
+                child: GridView.count(
+              primary: false,
+              padding: const EdgeInsets.all(20),
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              crossAxisCount: 3,
+              children: snapshot.hasData
+                  ? List.generate(snapshot.data!.length, (index) {
+                      return ThumbCard(snapshot.data![index], widget.cardWidth);
+                    })
+                  : List.generate(10, (int index) {
+                      return EmptyThumbCard(widget.cardWidth);
+                    }),
+            ))
+          ]);
         });
   }
+
+  // return GridView.builder(
+  //     itemCount: widget._queryResults.length,
+  //     gridDelegate:
+  //         SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+  //     itemBuilder: (BuildContext context, int index) {
+  //       final gridItem = widget._queryResults[index];
+  //       return Container(
+  //         child: Card(child: Text(widget._queryResults[index])),
+  //       );
+  //     });
 }
 
 class ThumbCard extends StatelessWidget {
@@ -68,7 +108,9 @@ class ThumbCard extends StatelessWidget {
   // const ThumbCard.empty(this.cardWidth) : videoData = null;
 
   _onTap(BuildContext context) {
-    Navigator.pushNamed(context, videoPlayerRoute, arguments: VideoPlayerPageArguments(videoData.videoUrl, videoData.filename));
+    Navigator.pushNamed(context, videoPlayerRoute,
+        arguments:
+            VideoPlayerPageArguments(videoData.videoUrl, videoData.filename));
 
     // await Navigator.push(
     //     context,
