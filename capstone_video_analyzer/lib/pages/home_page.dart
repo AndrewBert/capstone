@@ -1,12 +1,11 @@
 import 'dart:io';
 
+import 'package:capstone_video_analyzer/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
-import 'auth_service.dart';
 
 class HomePage extends StatefulWidget {
   @override

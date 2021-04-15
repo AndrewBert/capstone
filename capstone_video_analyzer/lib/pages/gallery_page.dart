@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:capstone_video_analyzer/constants.dart';
 import 'package:capstone_video_analyzer/grid_widget.dart';
-import 'package:capstone_video_analyzer/search_page.dart';
+import 'package:capstone_video_analyzer/services/auth_service.dart';
+import 'package:capstone_video_analyzer/services/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:cached_network_image/cached_network_image.dart';
-
-import 'auth_service.dart';
 
 class GalleryPage extends StatefulWidget {
   @override

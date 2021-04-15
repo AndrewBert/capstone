@@ -1,10 +1,11 @@
-import 'package:capstone_video_analyzer/constants.dart';
-import 'package:capstone_video_analyzer/gallery_page.dart';
 import 'package:capstone_video_analyzer/main.dart';
-import 'package:capstone_video_analyzer/search_page.dart';
+import 'package:capstone_video_analyzer/pages/gallery_page.dart';
+import 'package:capstone_video_analyzer/pages/search_page.dart';
+import 'package:capstone_video_analyzer/pages/video_player_page.dart';
 import 'package:capstone_video_analyzer/video_player_arguments.dart';
-import 'package:capstone_video_analyzer/video_player_page.dart';
 import 'package:flutter/material.dart';
+
+import 'constants.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

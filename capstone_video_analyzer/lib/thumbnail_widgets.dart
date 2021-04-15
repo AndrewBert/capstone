@@ -1,10 +1,10 @@
-import 'constants.dart';
-import 'string_utils.dart';
 import 'dart:math';
+import 'package:capstone_video_analyzer/services/constants.dart';
+import 'package:capstone_video_analyzer/services/search.dart';
+import 'package:capstone_video_analyzer/services/string_utils.dart';
 import 'package:capstone_video_analyzer/video_player_arguments.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:capstone_video_analyzer/search.dart';
 import 'package:flutter/material.dart';
 
 class ThumbnailGrid extends StatefulWidget {
@@ -74,7 +74,7 @@ class ThumbCard extends StatelessWidget {
     return GestureDetector(
         onTap: () async => {await _onTap(context)},
         child: Container(
-          width: cardWidth,
+          width: 400,
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: Column(

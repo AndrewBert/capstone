@@ -1,10 +1,8 @@
-import 'package:capstone_video_analyzer/search.dart';
+import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-
-import 'grid_widget.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -198,7 +196,7 @@ class SearchResultsListView extends StatefulWidget {
 class _SearchResultsListViewState extends State<SearchResultsListView> {
   Future? searchFuture;
 
-  var searchResults = [];
+  List<VideoData> searchResults = [];
 
   search(String? query) async {
     final HttpsCallable callable =
@@ -248,13 +246,14 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
       );
     }
 
-    final fsb = FloatingSearchBar.of(context);
+    // final fsb = FloatingSearchBar.of(context);
 
     return FutureBuilder(
       future: searchFuture,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         return Container(
-            color: Colors.blueGrey, child: ThumbnailGrid(searchResults));
+            color: Colors.blueGrey, 
+            child: ThumbnailGrid(searchResults));
       },
     );
 
