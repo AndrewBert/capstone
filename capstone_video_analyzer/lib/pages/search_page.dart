@@ -89,15 +89,16 @@ class _SearchPageState extends State<SearchPage> {
         actions: [
           FloatingSearchBarAction.searchToClear(),
         ],
-        onQueryChanged: (query) {
-          setState(() {
-            filteredSearchHistory = filterSearchTerms(filter: query);
-          });
-        },
-        onSubmitted: (query) {
+        // onQueryChanged: (query) {
+        //   setState(() {
+        //     filteredSearchHistory = filterSearchTerms(filter: query);
+        //   });
+        // },
+        onSubmitted: (query) async {
           setState(() {
             addSearchTerm(query);
             selectedTerm = query;
+            
           });
           controller.close();
         },
