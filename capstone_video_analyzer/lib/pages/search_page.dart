@@ -18,6 +18,8 @@ class _SearchPageState extends State<SearchPage> {
 
   String? selectedTerm;
 
+  Future<List<VideoData>>? searchResults;
+
   List<String> filterSearchTerms({
     required String? filter,
   }) {
@@ -52,6 +54,10 @@ class _SearchPageState extends State<SearchPage> {
   void putSearchTermFirst(String term) {
     deleteSearchTerm(term);
     addSearchTerm(term);
+  }
+
+  Future<List<VideoData>> getSearchResults(String q) async{
+    return await search(q);
   }
 
   late FloatingSearchBarController controller;
@@ -94,11 +100,11 @@ class _SearchPageState extends State<SearchPage> {
         //     filteredSearchHistory = filterSearchTerms(filter: query);
         //   });
         // },
-        onSubmitted: (query) async {
+        onSubmitted: (query) {
           setState(() {
             addSearchTerm(query);
             selectedTerm = query;
-            
+            searchResults = getSearchResults(query);
           });
           controller.close();
         },
