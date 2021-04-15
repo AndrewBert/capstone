@@ -217,6 +217,10 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     }
   }
 
+  //TODO search method is not getting hit because it is not called on rebuild.
+  //initState is only called when the widget loads
+  //Maybe i can ahve it return a new searchresultslistview every time a search is submitted
+
   @override
   void initState() {
     super.initState();
