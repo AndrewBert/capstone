@@ -18,7 +18,7 @@ class _SearchPageState extends State<SearchPage> {
 
   String? selectedTerm;
 
-  Future<List<VideoData>>? searchResults;
+  List<VideoData> searchResults = [];
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -56,8 +56,11 @@ class _SearchPageState extends State<SearchPage> {
     addSearchTerm(term);
   }
 
-  Future<List<VideoData>> getSearchResults(String q) async{
-    return await search(q);
+  Future? resultsFuture;
+
+  _getResults(String? query) async {
+    if (query == null) return;
+    searchResults = await search(query);
   }
 
   late FloatingSearchBarController controller;
@@ -81,8 +84,25 @@ class _SearchPageState extends State<SearchPage> {
       body: FloatingSearchBar(
         controller: controller,
         body: FloatingSearchBarScrollNotifier(
-          child: SearchResultsListView(
-            searchTerm: selectedTerm,
+          child: FutureBuilder(
+            future: resultsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  color: Colors.black,
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.done) {
+                return SearchResultsListView(
+                  searchResults: searchResults,
+                );
+              }
+
+              return Container(
+                color: Colors.red,
+              );
+            },
           ),
         ),
         transition: CircularFloatingSearchBarTransition(),
@@ -104,7 +124,7 @@ class _SearchPageState extends State<SearchPage> {
           setState(() {
             addSearchTerm(query);
             selectedTerm = query;
-            searchResults = getSearchResults(query);
+            resultsFuture = _getResults(query);
           });
           controller.close();
         },
@@ -184,11 +204,11 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 class SearchResultsListView extends StatefulWidget {
-  final String? searchTerm;
+  final List<VideoData> searchResults;
 
   SearchResultsListView({
     Key? key,
-    required this.searchTerm,
+    required this.searchResults,
   }) : super(key: key);
 
   @override
@@ -196,46 +216,9 @@ class SearchResultsListView extends StatefulWidget {
 }
 
 class _SearchResultsListViewState extends State<SearchResultsListView> {
-  Future? searchFuture;
-
-  List<VideoData> searchResults = [];
-
-  // search(String? query) async {
-  //   if (query == null) return;
-  //   final HttpsCallable callable =
-  //       FirebaseFunctions.instance.httpsCallable('search');
-  //   // ..timeout = const Duration(seconds: 60);
-  //   try {
-  //     final HttpsCallableResult result = await callable.call(
-  //       <String, dynamic>{'text': query},
-  //     );
-  //     final List<VideoData> response =
-  //         result.data['hits'].map<VideoData>((hit) {
-  //       bool timestampGuess =
-  //           hit["timestampGuess"] == null ? false : hit["timestampGuess"];
-  //       return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
-  //           hit["timestamp"], timestampGuess, hit["entities"]);
-  //     }).toList();
-  //     searchResults = response;
-  //   } catch (err) {
-  //     print('Error in search! $err');
-  //     return [];
-  //   }
-  // }
-
-  //TODO search method is not getting hit because it is not called on rebuild.
-  //initState is only called when the widget loads
-  //Maybe i can ahve it return a new searchresultslistview every time a search is submitted
-
-  @override
-  void initState() {
-    super.initState();
-    searchFuture = search(widget.searchTerm);
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (widget.searchTerm == null) {
+    if (widget.searchResults == null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -255,14 +238,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
 
     // final fsb = FloatingSearchBar.of(context);
 
-    return FutureBuilder(
-      future: searchFuture,
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        return Container(
-            color: Colors.blueGrey, 
-            child: ThumbnailGrid(searchResults));
-      },
-    );
+    return Container(
+        color: Colors.blueGrey, child: ThumbnailGrid(widget.searchResults));
 
     // return ListView(
     //   padding: EdgeInsets.only(
