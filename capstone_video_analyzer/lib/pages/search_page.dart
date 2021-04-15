@@ -200,28 +200,28 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
 
   List<VideoData> searchResults = [];
 
-  search(String? query) async {
-    if (query == null) return;
-    final HttpsCallable callable =
-        FirebaseFunctions.instance.httpsCallable('search');
-    // ..timeout = const Duration(seconds: 60);
-    try {
-      final HttpsCallableResult result = await callable.call(
-        <String, dynamic>{'text': query},
-      );
-      final List<VideoData> response =
-          result.data['hits'].map<VideoData>((hit) {
-        bool timestampGuess =
-            hit["timestampGuess"] == null ? false : hit["timestampGuess"];
-        return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
-            hit["timestamp"], timestampGuess, hit["entities"]);
-      }).toList();
-      searchResults = response;
-    } catch (err) {
-      print('Error in search! $err');
-      return [];
-    }
-  }
+  // search(String? query) async {
+  //   if (query == null) return;
+  //   final HttpsCallable callable =
+  //       FirebaseFunctions.instance.httpsCallable('search');
+  //   // ..timeout = const Duration(seconds: 60);
+  //   try {
+  //     final HttpsCallableResult result = await callable.call(
+  //       <String, dynamic>{'text': query},
+  //     );
+  //     final List<VideoData> response =
+  //         result.data['hits'].map<VideoData>((hit) {
+  //       bool timestampGuess =
+  //           hit["timestampGuess"] == null ? false : hit["timestampGuess"];
+  //       return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
+  //           hit["timestamp"], timestampGuess, hit["entities"]);
+  //     }).toList();
+  //     searchResults = response;
+  //   } catch (err) {
+  //     print('Error in search! $err');
+  //     return [];
+  //   }
+  // }
 
   //TODO search method is not getting hit because it is not called on rebuild.
   //initState is only called when the widget loads
