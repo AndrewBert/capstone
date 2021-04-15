@@ -8,84 +8,34 @@ import 'package:capstone_video_analyzer/search.dart';
 import 'package:flutter/material.dart';
 
 class ThumbnailGrid extends StatefulWidget {
-  final String query;
-  final double cardWidth;
+  final List<VideoData> videoDataList;
 
-  ThumbnailGrid(this.query, this.cardWidth);
+  ThumbnailGrid(this.videoDataList);
 
   @override
   _ThumbnailGridState createState() => _ThumbnailGridState();
 }
 
 class _ThumbnailGridState extends State<ThumbnailGrid> {
-  late Future<List<VideoData>> _queryResults;
-
-  @override
-  void initState() {
-    super.initState();
-    _queryResults = search(widget.query);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<VideoData>>(
-        future: _queryResults,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<VideoData>> snapshot) {
-          if (snapshot.hasError) {
-            return SizedBox(
-                child: Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: 60,
-            ));
-          }
-          return Column(children: <Widget>[
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Text(capitalize(widget.query),
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.headline5))),
-            Expanded(
-                child: GridView.count(
-              primary: false,
-              padding: const EdgeInsets.all(20),
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              crossAxisCount: 3,
-              children: snapshot.hasData
-                  ? List.generate(snapshot.data!.length, (index) {
-                      return ThumbCard(snapshot.data![index], widget.cardWidth);
-                    })
-                  : List.generate(10, (int index) {
-                      return EmptyThumbCard(widget.cardWidth);
-                    }),
-            ))
-          ]);
+    return GridView.builder(
+        itemCount: widget.videoDataList.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemBuilder: (BuildContext context, int index) {
+          final videoData = widget.videoDataList[index];
+          return Container(
+            child: ThumbCard(videoData),
+          );
         });
   }
-
-  // return GridView.builder(
-  //     itemCount: widget._queryResults.length,
-  //     gridDelegate:
-  //         SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-  //     itemBuilder: (BuildContext context, int index) {
-  //       final gridItem = widget._queryResults[index];
-  //       return Container(
-  //         child: Card(child: Text(widget._queryResults[index])),
-  //       );
-  //     });
 }
 
 class ThumbCard extends StatelessWidget {
   final VideoData videoData;
-  final double cardWidth;
 
-  const ThumbCard(this.videoData, this.cardWidth);
-
-  // const ThumbCard.empty(this.cardWidth) : videoData = null;
+  const ThumbCard(this.videoData);
 
   _onTap(BuildContext context) {
     Navigator.pushNamed(context, videoPlayerRoute,
