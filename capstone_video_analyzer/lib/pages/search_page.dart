@@ -195,6 +195,7 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
   List<VideoData> searchResults = [];
 
   search(String? query) async {
+    if (query == null) return;
     final HttpsCallable callable =
         FirebaseFunctions.instance.httpsCallable('search');
     // ..timeout = const Duration(seconds: 60);
