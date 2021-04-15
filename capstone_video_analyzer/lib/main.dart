@@ -1,4 +1,5 @@
 import 'package:capstone_video_analyzer/auth_service.dart';
+import 'package:capstone_video_analyzer/constants.dart';
 import 'package:capstone_video_analyzer/gallery_page.dart';
 import 'package:capstone_video_analyzer/signIn_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'task_manager_page.dart';
+import 'router.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +29,11 @@ class MyApp extends StatelessWidget {
             initialData: null)
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: AuthenticationWrapper(),
+        onGenerateRoute: RouteGenerator.generateRoute,
+        initialRoute: searchRoute,
       ),
     );
   }
