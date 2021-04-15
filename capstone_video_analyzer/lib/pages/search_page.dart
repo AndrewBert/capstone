@@ -12,12 +12,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   static const historyLength = 5;
 
-  List<String> _searchHistory = [
-    'fuchsia',
-    'flutter',
-    'widgets',
-    'resocoder',
-  ];
+  List<String> _searchHistory = [];
 
   late List<String> filteredSearchHistory;
 
