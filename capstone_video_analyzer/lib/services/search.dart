@@ -1,9 +1,9 @@
 import 'package:cloud_functions/cloud_functions.dart';
 
 class VideoData {
-  final String filename;
-  final String thumbnailUrl;
-  final String videoUrl;
+  final String? filename;
+  final String? thumbnailUrl;
+  final String? videoUrl;
   final DateTime? timestamp;
   final List<dynamic> entities;
   final bool timestampGuess;
