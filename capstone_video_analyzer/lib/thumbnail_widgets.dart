@@ -38,9 +38,10 @@ class ThumbCard extends StatelessWidget {
   const ThumbCard(this.videoData);
 
   _onTap(BuildContext context) {
+    if (videoData.videoUrl == null && videoData.filename == null) return;
     Navigator.pushNamed(context, videoPlayerRoute,
         arguments:
-            VideoPlayerPageArguments(videoData.videoUrl, videoData.filename));
+            VideoPlayerPageArguments(videoData.videoUrl!, videoData.filename!));
 
     // await Navigator.push(
     //     context,
@@ -81,7 +82,7 @@ class ThumbCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ThumbImage(videoData.thumbnailUrl),
+                ThumbImage(videoData.thumbnailUrl?? ""),
                 Padding(
                     padding: EdgeInsets.fromLTRB(5, 20, 5, 5),
                     child: Text(timestampString(),
