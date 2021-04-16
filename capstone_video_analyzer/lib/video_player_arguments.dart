@@ -1,6 +1,6 @@
 class VideoPlayerPageArguments {
   final String videoUrl;
-  final String title;
+  final String? title;
 
-  VideoPlayerPageArguments(this.videoUrl, this.title);
+  VideoPlayerPageArguments(this.videoUrl, {this.title});
 }

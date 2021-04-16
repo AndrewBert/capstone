@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatelessWidget {
-  final String url, title;
-  VideoPlayerPage(this.url, this.title);
+  final String url;
+  final String? title;
+  VideoPlayerPage(this.url, {this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -14,15 +15,16 @@ class VideoPlayerPage extends StatelessWidget {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: Center(child: VideoViewer(url, title))),
+            Expanded(child: Center(child: VideoViewer(url))),
           ],
         ));
   }
 }
 
 class VideoViewer extends StatefulWidget {
-  final String url, title;
-  VideoViewer(this.url, this.title);
+  final String url;
+  final String? title;
+  VideoViewer(this.url, {this.title});
 
   @override
   State<StatefulWidget> createState() {
@@ -71,14 +73,14 @@ void showWatchDialog(BuildContext context, String url, [String title = " "]) {
 
 class WatchDialog extends StatelessWidget {
   final String url;
-  final String title;
+  final String? title;
   WatchDialog(this.url, this.title);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
-      content: Container(width: 1000, child: VideoViewer(this.url, this.title)),
+      title: Text(title ?? ''),
+      content: Container(width: 1000, child: VideoViewer(this.url)),
       actions: <Widget>[
         TextButton(
           child: Text('Back'),

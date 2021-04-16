@@ -38,10 +38,10 @@ class ThumbCard extends StatelessWidget {
   const ThumbCard(this.videoData);
 
   _onTap(BuildContext context) {
-    if (videoData.videoUrl == null && videoData.filename == null) return;
+    if (videoData.videoUrl == null) return;
     Navigator.pushNamed(context, videoPlayerRoute,
         arguments:
-            VideoPlayerPageArguments(videoData.videoUrl!, videoData.filename!));
+            VideoPlayerPageArguments(videoData.videoUrl!));
 
     // await Navigator.push(
     //     context,

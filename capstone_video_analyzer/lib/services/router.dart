@@ -18,7 +18,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SearchPage());
       case videoPlayerRoute: {
         var arguments = settings.arguments as VideoPlayerPageArguments;
-        return MaterialPageRoute(builder: (_) => VideoPlayerPage(arguments.videoUrl, arguments.title));
+        return MaterialPageRoute(builder: (_) => VideoPlayerPage(arguments.videoUrl));
       }        
       default:
         return MaterialPageRoute(
