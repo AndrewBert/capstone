@@ -42,14 +42,6 @@ class ThumbCard extends StatelessWidget {
     Navigator.pushNamed(context, videoPlayerRoute,
         arguments:
             VideoPlayerPageArguments(videoData.videoUrl!));
-
-    // await Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) =>
-    //           WatchPage(this.videoData.videoUrl, this.videoData.filename),
-    //       fullscreenDialog: true,
-    //     ));
   }
 
   String entitiesString({maxEntities: 10}) {
