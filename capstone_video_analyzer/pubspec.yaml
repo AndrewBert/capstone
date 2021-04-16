@@ -37,6 +37,9 @@ dependencies:
   cached_network_image: ^3.0.0
   http: ^0.13.1
   cloud_functions: ^1.0.3
+  material_floating_search_bar: ^0.3.3
+  intl: ^0.17.0
+  chewie: ^1.0.0
 
 dev_dependencies:
   flutter_test:

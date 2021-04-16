@@ -1,15 +1,15 @@
 import 'dart:io';
 
+import 'package:capstone_video_analyzer/grid_widget.dart';
+import 'package:capstone_video_analyzer/services/auth_service.dart';
+import 'package:capstone_video_analyzer/services/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:cached_network_image/cached_network_image.dart';
-
-import 'auth_service.dart';
 
 class GalleryPage extends StatefulWidget {
   @override
@@ -48,7 +48,7 @@ class _GalleryPageState extends State<GalleryPage> {
       var downloadUrl = await imageRef.getDownloadURL();
       var thumbnail = CachedNetworkImage(
         imageUrl: downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
+        fit: BoxFit.fill,
         placeholder: (context, url) => CircularProgressIndicator(),
       );
       thumbnails.add(thumbnail);
@@ -115,6 +115,16 @@ class _GalleryPageState extends State<GalleryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Gallery"),
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, searchRoute);
+              })
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => selectVideoForUpload(context),
@@ -123,18 +133,8 @@ class _GalleryPageState extends State<GalleryPage> {
       body: FutureBuilder(
         future: thumbnailFuture,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            return Container(
-                child: GridView.builder(
-                    itemCount: thumbnails.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3),
-                    itemBuilder: (BuildContext context, int index) {
-                      final thumbnailItem = thumbnails[index];
-                      return Container(
-                        color: Colors.black,
-                        child: thumbnailItem,
-                      );
-                    }));
+          return Container(
+              color: Colors.blueGrey, child: GridWidget(thumbnails));
         },
       ),
     );
