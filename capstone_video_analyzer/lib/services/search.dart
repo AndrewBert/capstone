@@ -28,7 +28,7 @@ Future<List<VideoData>> search(String? query) async {
         bool timestampGuess =
             hit["timestampGuess"] == null ? false : hit["timestampGuess"];
         return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
-            hit["timestamp"], timestampGuess, hit["entities"]);
+            hit["timestamp"], timestampGuess, hit["entities"] ?? []);
       }).toList();
       return response;
     } catch (err) {
