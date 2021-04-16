@@ -86,12 +86,6 @@ class _SearchPageState extends State<SearchPage> {
           child: FutureBuilder(
             future: resultsFuture,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container(
-                  color: Colors.black,
-                );
-              }
-
               if (snapshot.connectionState == ConnectionState.done) {
                 return SearchResultsListView(
                   searchResults: searchResults,
@@ -99,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
               }
 
               return Container(
-                color: Colors.red,
+                color: Colors.blueGrey,
               );
             },
           ),
