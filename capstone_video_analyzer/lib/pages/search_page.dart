@@ -237,9 +237,14 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     }
 
     // final fsb = FloatingSearchBar.of(context);
+    // TODO replace hardcoded padding below
 
     return Container(
-        color: Colors.blueGrey, child: ThumbnailGrid(widget.searchResults));
+        color: Colors.blueGrey, 
+        child: Padding(
+          padding: const EdgeInsets.only(top: 65),
+          child: ThumbnailGrid(widget.searchResults),
+        ));
 
     // return ListView(
     //   padding: EdgeInsets.only(
