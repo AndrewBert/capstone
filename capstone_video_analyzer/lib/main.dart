@@ -1,4 +1,5 @@
 import 'package:capstone_video_analyzer/pages/gallery_page.dart';
+import 'package:capstone_video_analyzer/pages/search_page.dart';
 import 'package:capstone_video_analyzer/pages/signIn_page.dart';
 import 'package:capstone_video_analyzer/services/auth_service.dart';
 import 'package:capstone_video_analyzer/services/constants.dart';
@@ -43,7 +44,7 @@ class AuthenticationWrapper extends StatelessWidget {
     User? firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
-      return GalleryPage();
+      return SearchPage();
     }
     return SignInPage();
   }
