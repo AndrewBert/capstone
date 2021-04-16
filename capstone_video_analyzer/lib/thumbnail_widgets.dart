@@ -83,15 +83,15 @@ class ThumbCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ThumbImage(videoData.thumbnailUrl?? ""),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(5, 20, 5, 5),
-                    child: Text(timestampString(),
-                        style: Theme.of(context).textTheme.headline6)),
-                Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                    child: Text(entitiesString(),
-                        style: Theme.of(context).textTheme.caption)),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                        child: Text(entitiesString(),
+                            style: Theme.of(context).textTheme.caption)),
+                  ),
+                ),
               ],
             ),
           ),
