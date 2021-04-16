@@ -1,6 +1,5 @@
 import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
