@@ -32,8 +32,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         onGenerateRoute: RouteGenerator.generateRoute,
-        initialRoute: searchRoute,
+        initialRoute: authenticationRoute,
       ),
+      
     );
   }
 }
