@@ -75,6 +75,7 @@ class ThumbCard extends StatelessWidget {
     return GestureDetector(
         onTap: () async => {await _onTap(context)},
         child: Container(
+          color: Colors.white,
           width: 400,
           child: Padding(
             padding: const EdgeInsets.all(5),
