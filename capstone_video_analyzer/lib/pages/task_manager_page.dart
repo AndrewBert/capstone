@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:capstone_video_analyzer/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 
 
-import 'auth_service.dart';
 
 /// A StatefulWidget which keeps track of the current uploaded files.
 class TaskManager extends StatefulWidget {
