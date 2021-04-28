@@ -77,13 +77,11 @@ class ThumbCard extends StatelessWidget {
               children: [
                 ThumbImage(videoData.thumbnailUrl?? ""),
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                        child: Text(entitiesString(),
-                            style: Theme.of(context).textTheme.caption)),
-                  ),
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+                      child: Text(entitiesString(),
+                          style: Theme.of(context).textTheme.caption)),
                 ),
               ],
             ),
