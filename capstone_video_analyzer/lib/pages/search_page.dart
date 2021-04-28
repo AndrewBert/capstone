@@ -62,7 +62,7 @@ class _SearchPageState extends State<SearchPage> {
   Future? resultsFuture;
 
   _getResults(String? query) async {
-    if (query == null) return;
+    if (query == null || query.isEmpty) return;
     searchResults = await search(query);
   }
 
