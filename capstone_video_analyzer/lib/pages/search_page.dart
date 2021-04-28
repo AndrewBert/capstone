@@ -1,7 +1,9 @@
 import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
+import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+
 
 class SearchPage extends StatefulWidget {
   @override
@@ -30,6 +32,8 @@ class _SearchPageState extends State<SearchPage> {
       return _searchHistory.reversed.toList();
     }
   }
+
+
 
   void addSearchTerm(String term) {
     if (_searchHistory.contains(term)) {
@@ -64,6 +68,8 @@ class _SearchPageState extends State<SearchPage> {
 
   late FloatingSearchBarController controller;
 
+ 
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +85,9 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool showFab = MediaQuery.of(context).viewInsets.bottom==0.0;
     return Scaffold(
+      floatingActionButton: showFab ? UploadButton() : null,
       body: FloatingSearchBar(
         controller: controller,
         body: FloatingSearchBarScrollNotifier(
@@ -93,7 +101,7 @@ class _SearchPageState extends State<SearchPage> {
               }
 
               return Container(
-                color: Colors.blueGrey,
+                color: Colors.white70,
               );
             },
           ),

@@ -4,8 +4,9 @@ import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatelessWidget {
   final String url;
+  final String labels;
   final String? title;
-  VideoPlayerPage(this.url, {this.title});
+  VideoPlayerPage(this.url, this.labels, {this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class VideoPlayerPage extends StatelessWidget {
         ),
         body: Column(
           children: <Widget>[
+            SingleChildScrollView(child: Text(labels)),
             Expanded(child: Center(child: VideoViewer(url))),
           ],
         ));

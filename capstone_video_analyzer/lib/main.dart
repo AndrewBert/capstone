@@ -1,4 +1,3 @@
-import 'package:capstone_video_analyzer/pages/gallery_page.dart';
 import 'package:capstone_video_analyzer/pages/search_page.dart';
 import 'package:capstone_video_analyzer/pages/signIn_page.dart';
 import 'package:capstone_video_analyzer/services/auth_service.dart';
@@ -33,6 +32,7 @@ class MyApp extends StatelessWidget {
         ),
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: authenticationRoute,
+        debugShowCheckedModeBanner: false,
       ),
       
     );
