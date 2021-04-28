@@ -86,6 +86,7 @@ async function getVideoDataById(videoId, userId) {
     );
   } catch (err) {
     console.log(`Couldn't grab video link for ${data['filePath']}`);
+    console.log(`Error: ${err}`);
   }
   try {
     thumbLink = await getLink(
@@ -94,6 +95,7 @@ async function getVideoDataById(videoId, userId) {
     );
   } catch (err) {
     console.log(`Couldn't grab thumbnail link for ${data['thumbnail']}`);
+    console.log(`Error: ${err}`);
   }
 
   let entities = [];
@@ -113,6 +115,7 @@ async function getVideoDataById(videoId, userId) {
 }
 
 exports.search = async function(query, userid) {
+  console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files
   const hitIds = await algolia.search(query, userid);
   let res = await Promise.all(
