@@ -225,3 +225,25 @@ exports.search = functions.https.onCall(async (data, context) => {
   const hits = await utils.search(data.text, context.auth.uid);
   return {'hits': hits};
 });
+
+/* Returns all vide data from a users collection */
+exports.getAllVideoData = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token.email) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called while authenticated.',
+    );
+  }
+  // // Check if the email is whitelisted
+  // const allowed = await utils.isWhitelisted(context.auth.token.email);
+  // if (!allowed) {
+  //   throw new functions.https.HttpsError(
+  //       'failed-precondition',
+  //       `User ${context.auth.token.email} does not have access.`,
+  //   );
+  // }
+
+  const data = utils.getAllVideoData(context.auth.uid);
+  return {'videoData': data};
+});

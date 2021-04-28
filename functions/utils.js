@@ -114,6 +114,26 @@ async function getVideoDataById(videoId, userId) {
   };
 }
 
+exports.getAllVideoData = async function (userId) {
+  let videoDataList = [];
+  await admin
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('videos')
+      .get()
+      .then((querySnapshot)=> {
+        querySnapshot.forEach((doc) => {
+          var docData = doc.data();
+          var videoData = getVideoDataById(docData.videoId);
+          videoDataList.push(videoData);
+        })
+      })
+
+  return videoDataList;
+}
+
+
 exports.search = async function(query, userid) {
   console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files
