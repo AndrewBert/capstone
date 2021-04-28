@@ -101,7 +101,7 @@ class _SearchPageState extends State<SearchPage> {
               }
 
               return Container(
-                color: Colors.blueGrey,
+                color: Colors.white70,
               );
             },
           ),
