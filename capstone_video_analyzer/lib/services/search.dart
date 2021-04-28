@@ -15,26 +15,23 @@ class VideoData {
             : null;
 }
 
-Future<List<VideoData>> search(String? query) async {
-    final HttpsCallable callable =
-        FirebaseFunctions.instance.httpsCallable('search');
-    // ..timeout = const Duration(seconds: 60);
-    try {
-      final HttpsCallableResult result = await callable.call(
-        <String, dynamic>{'text': query},
-      );
-      final List<VideoData> response =
-          result.data['hits'].map<VideoData>((hit) {
-        bool timestampGuess =
-            hit["timestampGuess"] == null ? false : hit["timestampGuess"];
-        return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
-            hit["timestamp"], timestampGuess, hit["entities"] ?? []);
-      }).toList();
-      return response;
-    } catch (err) {
-      print('Error in search! $err');
-      return [];
-    }
+Future<List<VideoData>> search(String query) async {
+  final HttpsCallable callable =
+      FirebaseFunctions.instance.httpsCallable('search');
+  // ..timeout = const Duration(seconds: 60);
+  try {
+    final HttpsCallableResult result = await callable.call(
+      <String, dynamic>{'text': query},
+    );
+    final List<VideoData> response = result.data['hits'].map<VideoData>((hit) {
+      bool timestampGuess =
+          hit["timestampGuess"] == null ? false : hit["timestampGuess"];
+      return VideoData(hit["filepath"], hit["thumbnail"], hit["video"],
+          hit["timestamp"], timestampGuess, hit["entities"] ?? []);
+    }).toList();
+    return response;
+  } catch (err) {
+    print('Error in search! $err');
+    return [];
   }
-
-
+}
