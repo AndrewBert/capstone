@@ -41,10 +41,10 @@ class ThumbCard extends StatelessWidget {
     if (videoData.videoUrl == null) return;
     Navigator.pushNamed(context, videoPlayerRoute,
         arguments:
-            VideoPlayerPageArguments(videoData.videoUrl!));
+            VideoPlayerPageArguments(videoData.videoUrl!, labelsString()));
   }
 
-  String entitiesString({maxEntities: 10}) {
+  String labelsString({maxEntities: 10}) {
     if (videoData.entities.isEmpty) return " ";
     return videoData.entities
         .map((dynamic entity) {
@@ -80,7 +80,7 @@ class ThumbCard extends StatelessWidget {
                   child: Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                      child: Text(entitiesString(),
+                      child: Text(labelsString(),
                           style: Theme.of(context).textTheme.caption)),
                 ),
               ],
