@@ -138,8 +138,10 @@ exports.getAllVideoData = async function (userId) {
       .doc(userId)
       .collection('videos')
       .get();
+    console.log('Collection done');
   } catch (error) {
     console.error(error);
+    console.log(error);
   }
 
   return videoDataList;
