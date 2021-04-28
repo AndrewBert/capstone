@@ -24,6 +24,7 @@ const utils = require('./utils');
 const algolia = require('./algolia');
 const stripBom = require('strip-bom');
 
+
 require('dotenv').config();
 
 admin.initializeApp();
@@ -195,12 +196,12 @@ exports.makePreviewImage = functions.storage
     .onFinalize(async (object) => {
       await makePreviewImage(object);
     });
-// exports.processVideoJson = functions.storage
-//     .bucket(process.env.VIDEO_JSON_BUCKET)
-//     .object()
-//     .onFinalize(async (object) => {
-//       await processVideoJson(object);
-//     });
+exports.processVideoJson = functions.storage
+    .bucket(process.env.VIDEO_JSON_BUCKET)
+    .object()
+    .onFinalize(async (object) => {
+      await processVideoJson(object);
+    });
 
 /* Does what it says--takes a userid and a query and returns
 relevant video data */
@@ -212,14 +213,14 @@ exports.search = functions.https.onCall(async (data, context) => {
         'The function must be called while authenticated.',
     );
   }
-  // Check if the email is whitelisted
-  const allowed = await utils.isWhitelisted(context.auth.token.email);
-  if (!allowed) {
-    throw new functions.https.HttpsError(
-        'failed-precondition',
-        `User ${context.auth.token.email} does not have access.`,
-    );
-  }
+  // // Check if the email is whitelisted
+  // const allowed = await utils.isWhitelisted(context.auth.token.email);
+  // if (!allowed) {
+  //   throw new functions.https.HttpsError(
+  //       'failed-precondition',
+  //       `User ${context.auth.token.email} does not have access.`,
+  //   );
+  // }
 
   const hits = await utils.search(data.text, context.auth.uid);
   return {'hits': hits};
