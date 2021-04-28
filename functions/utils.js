@@ -115,23 +115,30 @@ async function getVideoDataById(videoId, userId) {
 }
 
 exports.getAllVideoData = async function (userId) {
-  console.log('Getting all videos...');
+  console.log(`Getting all videos for user: ${userId}`);
   let videoDataList = [];
-  await admin
+  // await admin
+  //     .firestore()
+  //     .collection('users')
+  //     .doc(userId)
+  //     .collection('videos')
+  //     .get()
+  //     .then((querySnapshot)=> {
+  //       querySnapshot.forEach((doc) => {
+  //         var docData = doc.data();
+  //         var videoData = getVideoDataById(docData.videoId);
+  //         videoDataList.push(videoData);
+  //       })
+  //     })
+
+  let collection = await admin
       .firestore()
       .collection('users')
       .doc(userId)
       .collection('videos')
       .get()
-      .then((querySnapshot)=> {
-        querySnapshot.forEach((doc) => {
-          var docData = doc.data();
-          var videoData = getVideoDataById(docData.videoId);
-          videoDataList.push(videoData);
-        })
-      })
 
-  console.log(`Video Data: ${videoDataList}`);
+  console.log(`Collection: ${collection}`);
   return videoDataList;
 }
 
