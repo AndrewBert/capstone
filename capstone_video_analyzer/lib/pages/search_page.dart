@@ -1,16 +1,8 @@
-import 'dart:io';
-
-import 'package:capstone_video_analyzer/services/auth_service.dart';
 import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
-import 'package:path/path.dart' as path;
-import 'package:provider/provider.dart';
-
 
 
 class SearchPage extends StatefulWidget {
@@ -40,6 +32,8 @@ class _SearchPageState extends State<SearchPage> {
       return _searchHistory.reversed.toList();
     }
   }
+
+
 
   void addSearchTerm(String term) {
     if (_searchHistory.contains(term)) {
@@ -74,46 +68,7 @@ class _SearchPageState extends State<SearchPage> {
 
   late FloatingSearchBarController controller;
 
-  Future<UploadTask?> uploadFile(PickedFile? file, BuildContext context) async {
-    if (file == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No file was selected'),
-      ));
-      return null;
-    }
-
-    User? currentUser = context.read<AuthService>().currentUser;
-    //TODO throw proper exception instead?
-    if (currentUser == null) return null;
-
-    UploadTask uploadTask;
-
-    // Create a Reference to the file
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child(currentUser.uid)
-        .child('/${path.basename(file.path)}');
-
-    final metadata = SettableMetadata(
-        contentType: 'video/mp4',
-        customMetadata: {'picked-file-path': file.path});
-
-    uploadTask = ref.putFile(File(file.path), metadata);
-
-    return Future.value(uploadTask);
-  }
-
-  Future<void> handleUploadType(BuildContext context) async {
-    PickedFile? file =
-        await ImagePicker().getVideo(source: ImageSource.gallery);
-    await uploadFile(file, context);
-    // UploadTask? task = await uploadFile(file, context);
-    // if (task != null) {
-    //   setState(() {
-    //     _uploadTasks = [..._uploadTasks, task];
-    //   });
-    // }
-  }
+ 
 
   @override
   void initState() {
@@ -131,14 +86,6 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Container(
-      child: FloatingActionButton(
-        onPressed: () => handleUploadType(context),
-        backgroundColor: Colors.red,
-        child: Icon(Icons.file_upload),
-
-      ),
-    ),
       body: FloatingSearchBar(
         controller: controller,
         body: FloatingSearchBarScrollNotifier(
