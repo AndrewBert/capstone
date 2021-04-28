@@ -85,7 +85,9 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool showFab = MediaQuery.of(context).viewInsets.bottom==0.0;
     return Scaffold(
+      floatingActionButton: showFab ? UploadButton() : null,
       body: FloatingSearchBar(
         controller: controller,
         body: FloatingSearchBarScrollNotifier(
