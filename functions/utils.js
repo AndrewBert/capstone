@@ -115,6 +115,7 @@ async function getVideoDataById(videoId, userId) {
 }
 
 exports.getAllVideoData = async function (userId) {
+  console.log('Getting all videos...');
   let videoDataList = [];
   await admin
       .firestore()
@@ -130,6 +131,7 @@ exports.getAllVideoData = async function (userId) {
         })
       })
 
+  console.log(`Video Data: ${videoDataList}`);
   return videoDataList;
 }
 
