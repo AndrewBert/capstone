@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
         ),
         onGenerateRoute: RouteGenerator.generateRoute,
         initialRoute: authenticationRoute,
+        debugShowCheckedModeBanner: false,
       ),
       
     );
