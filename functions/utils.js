@@ -131,14 +131,17 @@ exports.getAllVideoData = async function (userId) {
   //       })
   //     })
 
-  let collection = await admin
+  try {
+    let collection = await admin
       .firestore()
       .collection('users')
       .doc(userId)
       .collection('videos')
-      .get()
+      .get();
+  } catch (error) {
+    console.error(error);
+  }
 
-  console.log(`Collection: ${collection}`);
   return videoDataList;
 }
 
