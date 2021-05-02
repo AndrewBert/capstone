@@ -128,12 +128,13 @@ exports.getAllVideoData = async function (userId) {
       .collection('videos')
       .get()
       .then((querySnapshot)=> {
-        querySnapshot.forEach((doc) => {
-          var docData = doc.data();
-          console.log(`Getting data for video ${docData.videoId}`);
-          var videoData = getVideoDataById(docData.videoId);
-          videoDataList.push(videoData);
-        })
+        console.log(`Snapshot length: ${querySnapshot.length}`);
+        // querySnapshot.forEach((doc) => {
+        //   var docData = doc.data();
+        //   console.log(`Getting data for video ${docData.videoId}`);
+        //   var videoData = getVideoDataById(docData.videoId);
+        //   videoDataList.push(videoData);
+        // })
       })
   }catch(e){
     console.log(`There was an error`);
