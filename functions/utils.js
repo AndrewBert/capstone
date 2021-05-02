@@ -130,8 +130,10 @@ exports.getAllVideoData = async function (userId) {
 
     let docs = snapshot.docs.map(doc => doc.data());
 
+    console.log(`Number of results: ${docs.length}`);
+
     docs.forEach((doc) => {
-      console.log(`Getting video data for ${doc.videoId}`);
+      // console.log(`Getting video data for ${doc.videoId}`);
       videoDataList.push(getVideoDataById(doc.videoId));
     });
   }catch(e){
