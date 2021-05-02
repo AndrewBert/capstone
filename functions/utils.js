@@ -115,34 +115,43 @@ async function getVideoDataById(videoId, userId) {
 }
 
 exports.getAllVideoData = async function (userId) {
-  console.log(`Getting all videos for user: ${userId}`);
-  let videoDataList = [];
-  // await admin
-  //     .firestore()
-  //     .collection('users')
-  //     .doc(userId)
-  //     .collection('videos')
-  //     .get()
-  //     .then((querySnapshot)=> {
-  //       querySnapshot.forEach((doc) => {
-  //         var docData = doc.data();
-  //         var videoData = getVideoDataById(docData.videoId);
-  //         videoDataList.push(videoData);
-  //       })
-  //     })
 
-  try {
-    let collection = await admin
+  console.log(`Getting all videos for user: ${userId}`);
+
+  let videoDataList = [];
+
+  try{
+    await admin
       .firestore()
       .collection('users')
       .doc(userId)
       .collection('videos')
-      .get();
-    console.log('Collection done');
-  } catch (error) {
+      .get()
+      .then((querySnapshot)=> {
+        querySnapshot.forEach((doc) => {
+          var docData = doc.data();
+          console.log(`Getting data for video ${docData.videoId}`);
+          var videoData = getVideoDataById(docData.videoId);
+          videoDataList.push(videoData);
+        })
+      })
+  }catch(e){
+    console.log(`There was an error`);
     console.error(error);
-    console.log(error);
   }
+  
+  // try {
+  //   let collection = await admin
+  //     .firestore()
+  //     .collection('users')
+  //     .doc(userId)
+  //     .collection('videos')
+  //     .get();
+  //   console.log('Collection done');
+  // } catch (error) {
+  //   console.error(error);
+  //   console.log(error);
+  // }
 
   return videoDataList;
 }
