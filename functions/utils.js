@@ -121,39 +121,23 @@ exports.getAllVideoData = async function (userId) {
   let videoDataList = [];
 
   try{
-    await admin
+    const snapshot = await admin
       .firestore()
       .collection('users')
       .doc(userId)
       .collection('videos')
       .get()
-      .then((querySnapshot)=> {
-        console.log(`Snapshot length: ${querySnapshot.length}`);
-        // querySnapshot.forEach((doc) => {
-        //   var docData = doc.data();
-        //   console.log(`Getting data for video ${docData.videoId}`);
-        //   var videoData = getVideoDataById(docData.videoId);
-        //   videoDataList.push(videoData);
-        // })
-      })
+
+    let docs = snapshot.docs.map(doc => doc.data());
+
+    docs.forEach((doc) => {
+      console.log(`Getting video data for ${doc.videoId}`);
+      videoDataList.push(getVideoDataById(doc.videoId));
+    });
   }catch(e){
     console.log(`There was an error`);
     console.error(error);
   }
-  
-  // try {
-  //   let collection = await admin
-  //     .firestore()
-  //     .collection('users')
-  //     .doc(userId)
-  //     .collection('videos')
-  //     .get();
-  //   console.log('Collection done');
-  // } catch (error) {
-  //   console.error(error);
-  //   console.log(error);
-  // }
-
   return videoDataList;
 }
 
