@@ -244,6 +244,6 @@ exports.getAllVideoData = functions.https.onCall(async (data, context) => {
   //   );
   // }
 
-  const data = utils.getAllVideoData(context.auth.uid);
-  return {'videoData': data};
+  const vidData = await utils.getAllVideoData(context.auth.uid);
+  return {'videoData': vidData};
 });

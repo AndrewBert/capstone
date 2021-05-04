@@ -57,6 +57,9 @@ exports.getLink = getLink;
 /* Given a video id, return data about it, including
 temporary links to the video and thumbnail files */
 async function getVideoDataById(videoId, userId) {
+
+  if(videoId == null || userId == null) return;
+  
   const doc = await admin
       .firestore()
       .collection('users')
@@ -64,7 +67,7 @@ async function getVideoDataById(videoId, userId) {
       .collection('videos')
       .doc(videoId)
       .get();
-
+  console.log(`Getting Video: ${videoId} for User: ${userId}`);
   if (!doc.exists) {
     console.log(`Document ${userId}/${videoId} does not exist`);
     return null;
@@ -104,7 +107,8 @@ async function getVideoDataById(videoId, userId) {
   } catch (err) {
     console.log(`Could not grab entities for movie: ${err}`);
   }
-  return {
+
+  let mapOfVideos = {
     videoId: videoId,
     entities: entities,
     timestamp: data['videoTimestamp'],
@@ -112,6 +116,12 @@ async function getVideoDataById(videoId, userId) {
     video: videoLink,
     thumbnail: thumbLink,
   };
+
+  console.log("Hello there");
+
+  console.log(`Map size: ${mapOfVideos.size}`);
+
+  return mapOfVideos;
 }
 
 exports.getAllVideoData = async function (userId) {
@@ -128,22 +138,34 @@ exports.getAllVideoData = async function (userId) {
       .collection('videos')
       .get()
 
-    let docs = snapshot.docs.map(doc => doc.data());
+    if(snapshot.empty == false){
+      let docs = snapshot.docs;
 
-    console.log(`Number of results: ${docs.length}`);
+      for(doc in docs){
+        if(doc.exists == false) continue;
+        console.log(`Getting video data for ${doc.id}`);
+        let videoData = await getVideoDataById(doc.id);
+        if(videoData == null) continue;
+        console.log("ghghgh");
+        videoDataList.push(videoData);
+        // console.log(`Count = ${videoDataList.length}`);
+      }
+      console.log(`Number of results: ${docs.length}`);
 
-    docs.forEach((doc) => {
-      // console.log(`Getting video data for ${doc.videoId}`);
-      videoDataList.push(getVideoDataById(doc.videoId));
-    });
+    }
+    
   }catch(e){
     console.log(`There was an error`);
     console.error(error);
   }
+  console.log("Returning video list");
+
+  if(videoDataList == null){
+    console.log("List is null");
+  }
+
   return videoDataList;
 }
-
-
 exports.search = async function(query, userid) {
   console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files
