@@ -70,6 +70,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _onRefresh() async {
     setState(() {
+      selectedTerm = "Search";
       resultsFuture = _getAllVideoData();
     });
   }
@@ -138,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
           transition: CircularFloatingSearchBarTransition(),
           physics: BouncingScrollPhysics(),
           title: Text(
-            selectedTerm ?? 'The Search App',
+            selectedTerm ?? 'Search',
             style: Theme.of(context).textTheme.headline6,
           ),
           hint: 'Search and find out...',
