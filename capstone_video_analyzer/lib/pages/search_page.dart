@@ -205,6 +205,7 @@ class _SearchPageState extends State<SearchPage> {
                                 setState(() {
                                   putSearchTermFirst(term);
                                   selectedTerm = term;
+                                  resultsFuture = _getResults(selectedTerm);
                                 });
                                 controller.close();
                               },
