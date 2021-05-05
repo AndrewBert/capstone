@@ -11,14 +11,13 @@ class VideoPlayerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Video Player"),
-        ),
-        body: Column(
-          children: <Widget>[
-            SingleChildScrollView(child: Text(labels)),
-            Expanded(child: Center(child: VideoViewer(url))),
-          ],
+        body: SafeArea(
+          child: Column(
+            children: <Widget>[
+              SingleChildScrollView(child: Text(labels)),
+              Expanded(child: Center(child: VideoViewer(url))),
+            ],
+          ),
         ));
   }
 }
@@ -44,9 +43,11 @@ class _VideoViewerState extends State<VideoViewer> {
     _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
         allowFullScreen: false,
-        autoPlay: false,
+        autoPlay: true,
         showControls: true,
-        autoInitialize: true);
+        autoInitialize: true,
+        aspectRatio: 9/16
+        );
   }
 
   @override
