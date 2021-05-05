@@ -22,12 +22,12 @@ class _ThumbnailGridState extends State<ThumbnailGrid> {
     return GridView.builder(
         itemCount: widget.videoDataList.length,
         gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 9/16),
         itemBuilder: (BuildContext context, int index) {
           final videoData = widget.videoDataList[index];
-          return Container(
-            child: ThumbCard(videoData),
-          );
+          return ThumbCard(videoData);
         });
   }
 }
@@ -45,14 +45,14 @@ class ThumbCard extends StatelessWidget {
   }
 
   String labelsString({maxEntities: 10}) {
-    if (videoData.entities.isEmpty) return " ";
-    return videoData.entities
+    if (videoData.entities == null || videoData.entities!.isEmpty) return " ";
+    return videoData.entities!
         .map((dynamic entity) {
           entity = entity.toString();
           return capitalize(entity);
         })
         .toList()
-        .sublist(0, min(videoData.entities.length, maxEntities))
+        .sublist(0, min(videoData.entities!.length, maxEntities))
         .join(', ');
   }
 
@@ -66,26 +66,9 @@ class ThumbCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async => {await _onTap(context)},
-        child: Container(
-          color: Colors.white,
-          width: 400,
-          child: Padding(
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ThumbImage(videoData.thumbnailUrl?? ""),
-                Expanded(
-                  child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                      child: Text(labelsString(),
-                          style: Theme.of(context).textTheme.caption)),
-                ),
-              ],
-            ),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 1),
+          child: ThumbImage(videoData.thumbnailUrl?? ""),
         ));
   }
 }
@@ -142,12 +125,10 @@ class ThumbImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-        aspectRatio: 3 / 2,
-        child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => CircularProgressIndicator(),
-        ));
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: BoxFit.fill,
+      placeholder: (context, url) => CircularProgressIndicator(),
+    );
   }
 }
