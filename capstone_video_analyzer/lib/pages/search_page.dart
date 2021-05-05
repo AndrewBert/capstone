@@ -6,13 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 class SearchPage extends StatefulWidget {
-  
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-
   static const historyLength = 5;
 
   List<String> _searchHistory = [];
@@ -100,6 +98,24 @@ class _SearchPageState extends State<SearchPage> {
               if (snapshot.connectionState == ConnectionState.done) {
                 return SearchResultsListView(
                   searchResults: contentToDisplay,
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.grey,
+                          strokeWidth: 10,
+                        ),
+                      ),
+                      Container(child: Text("Loading videos..."),)
+                    ],
+                  ),
                 );
               }
 

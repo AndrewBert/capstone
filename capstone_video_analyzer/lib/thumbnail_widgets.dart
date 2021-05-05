@@ -128,7 +128,7 @@ class ThumbImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: imageUrl,
       fit: BoxFit.fill,
-      placeholder: (context, url) => CircularProgressIndicator(),
+      placeholder: (context, url) => Center(child: Container(child: CircularProgressIndicator())),
     );
   }
 }
