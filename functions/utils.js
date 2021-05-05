@@ -142,7 +142,6 @@ exports.getAllVideoData = async function (userId) {
         console.log(`Getting video data for ${docs[i].id}`);
         let videoData = await getVideoDataById(docs[i].id, userId);
         if(videoData == null) continue;
-        console.log("ghghgh");
         videoDataList.push(videoData);
         // console.log(`Count = ${videoDataList.length}`);
 

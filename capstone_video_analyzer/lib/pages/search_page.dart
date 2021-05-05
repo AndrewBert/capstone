@@ -1,4 +1,3 @@
-import 'package:capstone_video_analyzer/services/constants.dart';
 import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
