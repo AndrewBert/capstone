@@ -68,8 +68,10 @@ class _SearchPageState extends State<SearchPage> {
     contentToDisplay = await getAllVideoData();
   }
 
-  Future<void> _onRefresh() async{
-    resultsFuture = _getAllVideoData();
+  Future<void> _onRefresh() async {
+    setState(() {
+      resultsFuture = _getAllVideoData();
+    });
   }
 
   late FloatingSearchBarController controller;
