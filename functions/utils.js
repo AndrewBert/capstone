@@ -67,7 +67,7 @@ async function getVideoDataById(videoId, userId) {
       .collection('videos')
       .doc(videoId)
       .get();
-  console.log(`Getting Video: ${videoId} for User: ${userId}`);
+
   if (!doc.exists) {
     console.log(`Document ${userId}/${videoId} does not exist`);
     return null;
@@ -108,7 +108,7 @@ async function getVideoDataById(videoId, userId) {
     console.log(`Could not grab entities for movie: ${err}`);
   }
 
-  let mapOfVideos = {
+  let videoMap = {
     videoId: videoId,
     entities: entities,
     timestamp: data['videoTimestamp'],
@@ -117,11 +117,7 @@ async function getVideoDataById(videoId, userId) {
     thumbnail: thumbLink,
   };
 
-  console.log("Hello there");
-
-  console.log(`Map size: ${mapOfVideos.size}`);
-
-  return mapOfVideos;
+  return videoMap;
 }
 
 exports.getAllVideoData = async function (userId) {
@@ -131,7 +127,7 @@ exports.getAllVideoData = async function (userId) {
   let videoDataList = [];
 
   try{
-    const snapshot = await admin
+    let snapshot = await admin
       .firestore()
       .collection('users')
       .doc(userId)
@@ -140,23 +136,26 @@ exports.getAllVideoData = async function (userId) {
 
     if(snapshot.empty == false){
       let docs = snapshot.docs;
-
-      for(doc in docs){
-        if(doc.exists == false) continue;
-        console.log(`Getting video data for ${doc.id}`);
-        let videoData = await getVideoDataById(doc.id);
+      var i;
+      for(i=0; i<docs.length; i++){
+        if(docs[i].exists == false) continue;
+        console.log(`Getting video data for ${docs[i].id}`);
+        let videoData = await getVideoDataById(docs[i].id, userId);
         if(videoData == null) continue;
         console.log("ghghgh");
         videoDataList.push(videoData);
         // console.log(`Count = ${videoDataList.length}`);
+
       }
-      console.log(`Number of results: ${docs.length}`);
+      // for(doc in snapshot.docs){
+        
+      // }
+      console.log(`Number of results: ${snapshot.docs.length}`);
 
     }
     
   }catch(e){
-    console.log(`There was an error`);
-    console.error(error);
+    console.log(`There was an error ${e}`);
   }
   console.log("Returning video list");
 
