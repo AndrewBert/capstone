@@ -134,7 +134,7 @@ class _GalleryPageState extends State<GalleryPage> {
         future: thumbnailFuture,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           return Container(
-              color: Colors.blueGrey, child: GridWidget(thumbnails));
+              color: Colors.white, child: GridWidget(thumbnails));
         },
       ),
     );
