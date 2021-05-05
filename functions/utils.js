@@ -57,6 +57,9 @@ exports.getLink = getLink;
 /* Given a video id, return data about it, including
 temporary links to the video and thumbnail files */
 async function getVideoDataById(videoId, userId) {
+
+  if(videoId == null || userId == null) return;
+  
   const doc = await admin
       .firestore()
       .collection('users')
@@ -104,7 +107,8 @@ async function getVideoDataById(videoId, userId) {
   } catch (err) {
     console.log(`Could not grab entities for movie: ${err}`);
   }
-  return {
+
+  let videoMap = {
     videoId: videoId,
     entities: entities,
     timestamp: data['videoTimestamp'],
@@ -112,8 +116,55 @@ async function getVideoDataById(videoId, userId) {
     video: videoLink,
     thumbnail: thumbLink,
   };
+
+  return videoMap;
 }
 
+exports.getAllVideoData = async function (userId) {
+
+  console.log(`Getting all videos for user: ${userId}`);
+
+  let videoDataList = [];
+
+  try{
+    let snapshot = await admin
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('videos')
+      .get()
+
+    if(snapshot.empty == false){
+      let docs = snapshot.docs;
+      var i;
+      for(i=0; i<docs.length; i++){
+        if(docs[i].exists == false) continue;
+        console.log(`Getting video data for ${docs[i].id}`);
+        let videoData = await getVideoDataById(docs[i].id, userId);
+        if(videoData == null) continue;
+        console.log("ghghgh");
+        videoDataList.push(videoData);
+        // console.log(`Count = ${videoDataList.length}`);
+
+      }
+      // for(doc in snapshot.docs){
+        
+      // }
+      console.log(`Number of results: ${snapshot.docs.length}`);
+
+    }
+    
+  }catch(e){
+    console.log(`There was an error ${e}`);
+  }
+  console.log("Returning video list");
+
+  if(videoDataList == null){
+    console.log("List is null");
+  }
+
+  return videoDataList;
+}
 exports.search = async function(query, userid) {
   console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files

@@ -1,16 +1,18 @@
+import 'package:capstone_video_analyzer/services/constants.dart';
 import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
-
 class SearchPage extends StatefulWidget {
+  
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
+
   static const historyLength = 5;
 
   List<String> _searchHistory = [];
@@ -19,7 +21,7 @@ class _SearchPageState extends State<SearchPage> {
 
   String? selectedTerm;
 
-  List<VideoData> searchResults = [];
+  List<VideoData> contentToDisplay = [];
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -32,8 +34,6 @@ class _SearchPageState extends State<SearchPage> {
       return _searchHistory.reversed.toList();
     }
   }
-
-
 
   void addSearchTerm(String term) {
     if (_searchHistory.contains(term)) {
@@ -63,18 +63,21 @@ class _SearchPageState extends State<SearchPage> {
 
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
-    searchResults = await search(query);
+    contentToDisplay = await search(query);
+  }
+
+  _getAllVideoData() async {
+    contentToDisplay = await getAllVideoData();
   }
 
   late FloatingSearchBarController controller;
-
- 
 
   @override
   void initState() {
     super.initState();
     controller = FloatingSearchBarController();
     filteredSearchHistory = filterSearchTerms(filter: null);
+    resultsFuture = _getAllVideoData();
   }
 
   @override
@@ -85,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool showFab = MediaQuery.of(context).viewInsets.bottom==0.0;
+    final bool showFab = MediaQuery.of(context).viewInsets.bottom == 0.0;
     return Scaffold(
       floatingActionButton: showFab ? UploadButton() : null,
       body: FloatingSearchBar(
@@ -96,7 +99,7 @@ class _SearchPageState extends State<SearchPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return SearchResultsListView(
-                  searchResults: searchResults,
+                  searchResults: contentToDisplay,
                 );
               }
 
@@ -241,7 +244,7 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     // TODO replace hardcoded padding below
 
     return Container(
-        color: Colors.blueGrey, 
+        color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.only(top: 65),
           child: ThumbnailGrid(widget.searchResults),
