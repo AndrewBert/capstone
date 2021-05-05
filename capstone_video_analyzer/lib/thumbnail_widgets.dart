@@ -24,7 +24,10 @@ class _ThumbnailGridState extends State<ThumbnailGrid> {
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              childAspectRatio: 9/16),
+              childAspectRatio: 9/16,
+              crossAxisSpacing: 1,
+              mainAxisSpacing: 1
+              ),
         itemBuilder: (BuildContext context, int index) {
           final videoData = widget.videoDataList[index];
           return ThumbCard(videoData);
@@ -66,10 +69,7 @@ class ThumbCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async => {await _onTap(context)},
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 1),
-          child: ThumbImage(videoData.thumbnailUrl?? ""),
-        ));
+        child: ThumbImage(videoData.thumbnailUrl?? ""));
   }
 }
 
