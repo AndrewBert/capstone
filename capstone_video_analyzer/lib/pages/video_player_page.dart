@@ -14,17 +14,38 @@ class VideoPlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    _deleteVideo() {
-      onDeleteVideo(url);
-      Navigator.pop(context);
+    _deleteButtonPressed() async{
+      var deleteSelected = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Delete Video"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: Text('Yes')),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: Text('No')),
+              ],
+            );
+          });
+      if (deleteSelected) {
+        onDeleteVideo(url);
+        Navigator.pop(context);
+      }
     }
 
     return Scaffold(
         appBar: AppBar(
           actions: [
             IconButton(
-                icon: Icon(Icons.delete), onPressed: () => _deleteVideo())
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteButtonPressed())
           ],
         ),
         body: SafeArea(
