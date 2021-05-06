@@ -29,12 +29,12 @@ require('dotenv').config();
 
 /* Check if a user is whitelisted. Don't give any
 users not on the Firebase whitelist access to the app */
-exports.isWhitelisted = async function(email) {
+exports.isWhitelisted = async function (email) {
   const record = await admin
-      .firestore()
-      .collection('whitelist')
-      .doc(email)
-      .get();
+    .firestore()
+    .collection('whitelist')
+    .doc(email)
+    .get();
   return record.exists;
 };
 
@@ -58,15 +58,15 @@ exports.getLink = getLink;
 temporary links to the video and thumbnail files */
 async function getVideoDataById(videoId, userId) {
 
-  if(videoId == null || userId == null) return;
-  
+  if (videoId == null || userId == null) return;
+
   const doc = await admin
-      .firestore()
-      .collection('users')
-      .doc(userId)
-      .collection('videos')
-      .doc(videoId)
-      .get();
+    .firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('videos')
+    .doc(videoId)
+    .get();
 
   if (!doc.exists) {
     console.log(`Document ${userId}/${videoId} does not exist`);
@@ -84,8 +84,8 @@ async function getVideoDataById(videoId, userId) {
 
   try {
     videoLink = await getLink(
-        process.env.VIDEO_BUCKET,
-        data['filePath'],
+      process.env.VIDEO_BUCKET,
+      data['filePath'],
     );
   } catch (err) {
     console.log(`Couldn't grab video link for ${data['filePath']}`);
@@ -93,8 +93,8 @@ async function getVideoDataById(videoId, userId) {
   }
   try {
     thumbLink = await getLink(
-        process.env.THUMBNAIL_BUCKET,
-        data['thumbnail'],
+      process.env.THUMBNAIL_BUCKET,
+      data['thumbnail'],
     );
   } catch (err) {
     console.log(`Couldn't grab thumbnail link for ${data['thumbnail']}`);
@@ -126,7 +126,7 @@ exports.getAllVideoData = async function (userId) {
 
   let videoDataList = [];
 
-  try{
+  try {
     let snapshot = await admin
       .firestore()
       .collection('users')
@@ -134,46 +134,46 @@ exports.getAllVideoData = async function (userId) {
       .collection('videos')
       .get()
 
-    if(snapshot.empty == false){
+    if (snapshot.empty == false) {
       let docs = snapshot.docs;
       var i;
-      for(i=0; i<docs.length; i++){
-        if(docs[i].exists == false) continue;
+      for (i = 0; i < docs.length; i++) {
+        if (docs[i].exists == false) continue;
         console.log(`Getting video data for ${docs[i].id}`);
         let videoData = await getVideoDataById(docs[i].id, userId);
-        if(videoData == null) continue;
+        if (videoData == null) continue;
         videoDataList.push(videoData);
         // console.log(`Count = ${videoDataList.length}`);
 
       }
       // for(doc in snapshot.docs){
-        
+
       // }
       console.log(`Number of results: ${snapshot.docs.length}`);
 
     }
-    
-  }catch(e){
+
+  } catch (e) {
     console.log(`There was an error ${e}`);
   }
   console.log("Returning video list");
 
-  if(videoDataList == null){
+  if (videoDataList == null) {
     console.log("List is null");
   }
 
   return videoDataList;
 }
 
-exports.search = async function(query, userid) {
+exports.search = async function (query, userid) {
   console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files
   const hitIds = await algolia.search(query, userid);
   let res = await Promise.all(
-      hitIds.map(async (hits) => {
-        const videoData = await getVideoDataById(hits.videoId, hits.userId);
-        return videoData;
-      }),
+    hitIds.map(async (hits) => {
+      const videoData = await getVideoDataById(hits.videoId, hits.userId);
+      return videoData;
+    }),
   );
   res = res.filter((data) => data);
   res.sort((a, b) => {
@@ -183,40 +183,69 @@ exports.search = async function(query, userid) {
   return res;
 };
 
-exports.deleteVideo = async function(fileName, userId){
-  console.log(`Trying to delete ${fileName}`);
-  await admin
-      .firestore()
-      .collection('users')
-      .doc(userId)
-      .collection('videos')
-      .doc(videoId)
-      .delete()
-      .then(()=> {
-        console.log("Document deleted!");
-      }).catch((error) =>{
-        console.log(`Error removing document ${error}`);
-      })
+exports.deleteVideo = async function (videoId, userId) {
+  console.log(`Trying to delete ${videoId}`);
+  try {
+    await admin
+    .firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('videos')
+    .doc(videoId)
+    .delete()
+    .then(() => {
+      console.log("Document deleted from firestore!");
+    }).catch((error) => {
+      console.log(`Error removing document ${error}`);
+    })
+    
+    //todo this is fragile if file extension is not always these things
+    deleteBucketFile(process.env.VIDEO_BUCKET, `${userId}/${videoId}.mp4`)
+    deleteBucketFile(process.env.THUMBNAIL_BUCKET, `${userId}/${videoId}.png`)
+    deleteBucketFile(process.env.VIDEO_JSON_BUCKET, `${userId}/${videoId}.json`)
+
+   
+
+  } catch (e) {
+    console.log(`Overall Error removing video ${videoId}`);
+  }
 }
+
+/* Given a GCS file, delete it*/
+async function deleteBucketFile(bucket, fileName) {
+  console.log(`Trying to delete ${fileName}`);
+  const blob = await admin
+    .storage()
+    .bucket(bucket)
+    .file(fileName)
+  if (blob.exists == false) return;
+  await blob.delete()
+    .then(() => {
+      console.log(`Document deleted from ${bucket}!`);
+    }).catch((error) => {
+      console.log(`Error removing document from ${bucket}: ${error}`);
+    })
+}
+exports.deleteBucketFile = deleteBucketFile
 
 /* Creates a preview image from the file at inFilePath written
 to outDirectory and outFile */
-exports.makePreviewImage = function(
-    inFilePath,
-    outDir,
-    outFileName,
-    width = 500,
-    timeMark = '33%',
+exports.makePreviewImage = function (
+  inFilePath,
+  outDir,
+  outFileName,
+  width = 500,
+  timeMark = '33%',
 ) {
   const cmd = ffmpeg(inFilePath)
-      .screenshots({
-        count: 1,
-        timemarks: ['00:00:02.000'],
-        size: `${width}x?`,
-        folder: outDir,
-        filename: outFileName,
-      })
-      .frames(1);
+    .screenshots({
+      count: 1,
+      timemarks: ['00:00:02.000'],
+      size: `${width}x?`,
+      folder: outDir,
+      filename: outFileName,
+    })
+    .frames(1);
 
   return new Promise((resolve, reject) => {
     cmd.on('end', resolve);
@@ -227,7 +256,7 @@ exports.makePreviewImage = function(
 /* Parse date from timestamp. This function uses regular expressions
 to match common time formats. It may not work on your data formats.
 Specifically it supports the format 'year-month-day hour_minute_second' */
-exports.parseDate = function(dateString) {
+exports.parseDate = function (dateString) {
   //  "._clip-2006-12-29 17;08;05.mp4"
   let year; let month; let day; let hours; let seconds; let minutes;
 
@@ -240,8 +269,8 @@ exports.parseDate = function(dateString) {
   for (let i = 0; i < regExs.length; i++) {
     if (dateString.match(regExs[i])) {
       [year, month, day, hours, seconds, minutes] = dateString
-          .match(regExs[i])
-          .slice(1);
+        .match(regExs[i])
+        .slice(1);
       break;
     }
   }
@@ -251,7 +280,7 @@ exports.parseDate = function(dateString) {
   }
   if (hours != null && minutes != null && seconds != null) {
     return Date.parse(
-        `${year}-${month}-${day} ${hours}:${minutes}:${seconds} EST`,
+      `${year}-${month}-${day} ${hours}:${minutes}:${seconds} EST`,
     );
   }
   return Date.parse(`${year}-${month}-${day}`);
@@ -260,84 +289,84 @@ exports.parseDate = function(dateString) {
 /* Functions for parsing Video Intelligence JSON Output */
 function parseTranscript(jsonBlob) {
   return jsonBlob.annotation_results
-      .filter((annotation) => {
+    .filter((annotation) => {
       // Ignore annotations without speech transcriptions
-        return annotation.speech_transcriptions;
-      })
-      .flatMap((annotation) => {
+      return annotation.speech_transcriptions;
+    })
+    .flatMap((annotation) => {
       // Sometimes transcription options are empty, so remove those
-        return annotation.speech_transcriptions
-            .filter((transcription) => {
-              return Object.keys(transcription.alternatives[0]).length;
-            })
-            .map((transcription) => {
-              // We always want the first transcription alternative
-              const alternative = transcription.alternatives[0];
-              // Streamline the json so we have less to store
+      return annotation.speech_transcriptions
+        .filter((transcription) => {
+          return Object.keys(transcription.alternatives[0]).length;
+        })
+        .map((transcription) => {
+          // We always want the first transcription alternative
+          const alternative = transcription.alternatives[0];
+          // Streamline the json so we have less to store
+          return {
+            text: null,
+            entity: null,
+            transcript: alternative.transcript,
+            confidence: alternative.confidence,
+            start_time: alternative.words[0].start_time,
+            words: alternative.words.map((word) => {
               return {
-                text: null,
-                entity: null,
-                transcript: alternative.transcript,
-                confidence: alternative.confidence,
-                start_time: alternative.words[0].start_time,
-                words: alternative.words.map((word) => {
-                  return {
-                    start_time: word.start_time.seconds || 0,
-                    end_time: word.end_time.seconds,
-                    word: word.word,
-                  };
-                }),
+                start_time: word.start_time.seconds || 0,
+                end_time: word.end_time.seconds,
+                word: word.word,
               };
-            });
-      });
+            }),
+          };
+        });
+    });
 }
 exports.parseTranscript = parseTranscript;
 
 /* Image labels (i.e. snow, baby laughing, bridal shower)*/
 function parseShotLabelAnnotations(jsonBlob) {
   return jsonBlob.annotation_results
-      .filter((annotation) => {
+    .filter((annotation) => {
       // Ignore annotations without shot label annotations
-        return annotation.shot_label_annotations;
-      })
-      .flatMap((annotation) => {
-        return annotation.shot_label_annotations.flatMap((annotation) => {
-          return annotation.segments.flatMap((segment) => {
-            return {
-              text: null,
-              transcript: null,
-              entity: annotation.entity.description,
-              confidence: segment.confidence,
-              start_time: segment.segment.start_time_offset.seconds || 0,
-              end_time: segment.segment.end_time_offset.seconds,
-            };
-          });
+      return annotation.shot_label_annotations;
+    })
+    .flatMap((annotation) => {
+      return annotation.shot_label_annotations.flatMap((annotation) => {
+        return annotation.segments.flatMap((segment) => {
+          return {
+            text: null,
+            transcript: null,
+            entity: annotation.entity.description,
+            confidence: segment.confidence,
+            start_time: segment.segment.start_time_offset.seconds || 0,
+            end_time: segment.segment.end_time_offset.seconds,
+          };
         });
       });
+    });
 }
 exports.parseShotLabelAnnotations = parseShotLabelAnnotations;
 
 /* Text shown on screen in videos, i.e. street sign text */
 function parseTextAnnotations(jsonBlob) {
   return jsonBlob.annotation_results
-      .filter((annotation) => {
+    .filter((annotation) => {
       // Ignore annotations without text annotations
-        return annotation.text_annotations;
-      })
-      .flatMap((annotation) => {
-        return annotation.text_annotations.flatMap((annotation) => {
-          return annotation.segments.flatMap((segment) => {
-            return {
-              transcript: null,
-              entity: null,
-              text: annotation.text,
-              confidence: segment.confidence,
-              start_time: segment.segment.start_time_offset.seconds || 0,
-              end_time: segment.segment.end_time_offset.seconds,
-            };
-          });
+      return annotation.text_annotations;
+    })
+    .flatMap((annotation) => {
+      return annotation.text_annotations.flatMap((annotation) => {
+        return annotation.segments.flatMap((segment) => {
+          return {
+            transcript: null,
+            entity: null,
+            text: annotation.text,
+            confidence: segment.confidence,
+            start_time: segment.segment.start_time_offset.seconds || 0,
+            end_time: segment.segment.end_time_offset.seconds,
+          };
         });
       });
+    });
 }
 
 /* Given a videoId and a userId, gets image labels found in a photo. */
@@ -345,9 +374,9 @@ async function getEntities(videoId, userId) {
   const fileId = `${Math.floor(Math.random() * 1000000)}.json`;
   const tempPath = path.join(os.tmpdir(), fileId);
   const cloudFile = admin
-      .storage()
-      .bucket(process.env.VIDEO_JSON_BUCKET)
-      .file(`${userId}/${videoId}.json`);
+    .storage()
+    .bucket(process.env.VIDEO_JSON_BUCKET)
+    .file(`${userId}/${videoId}.json`);
   const exists = await cloudFile.exists();
   if (!exists) {
     throw new Error(`File ${userId}/${videoId}.json does not exist`);
