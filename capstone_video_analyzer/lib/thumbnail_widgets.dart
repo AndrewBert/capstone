@@ -1,11 +1,13 @@
 import 'dart:math';
 import 'package:capstone_video_analyzer/services/constants.dart';
-import 'package:capstone_video_analyzer/services/search.dart';
 import 'package:capstone_video_analyzer/services/string_utils.dart';
 import 'package:capstone_video_analyzer/video_player_arguments.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'models/video_data.dart';
+import 'services/cloud_service.dart';
 
 class ThumbnailGrid extends StatefulWidget {
   final List<VideoData> videoDataList;
@@ -39,6 +41,7 @@ class _ThumbnailGridState extends State<ThumbnailGrid> {
       if (url == videoData.videoUrl) {
         setState(() {
           videoDataList.removeAt(i);
+          CloudService.deleteVideoFromCloud(videoData.filename);
         });
         break;
       }
