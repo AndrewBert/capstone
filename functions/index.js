@@ -247,3 +247,15 @@ exports.getAllVideoData = functions.https.onCall(async (data, context) => {
   const vidData = await utils.getAllVideoData(context.auth.uid);
   return {'videoData': vidData};
 });
+
+exports.deleteVideo = functions.https.onCall(async (data, context) => {
+  if (!context.auth || !context.auth.token.email) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called while authenticated.',
+    );
+  }
+
+  await utils.deleteVideo(data.fileName, context.auth.uid);
+})

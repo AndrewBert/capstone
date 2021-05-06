@@ -164,6 +164,7 @@ exports.getAllVideoData = async function (userId) {
 
   return videoDataList;
 }
+
 exports.search = async function(query, userid) {
   console.log(`Searching for "${query}"`);
   // hitIds are the video ids of matching files
@@ -181,6 +182,22 @@ exports.search = async function(query, userid) {
   });
   return res;
 };
+
+exports.deleteVideo = async function(fileName, userId){
+  console.log(`Trying to delete ${fileName}`);
+  await admin
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('videos')
+      .doc(videoId)
+      .delete()
+      .then(()=> {
+        console.log("Document deleted!");
+      }).catch((error) =>{
+        console.log(`Error removing document ${error}`);
+      })
+}
 
 /* Creates a preview image from the file at inFilePath written
 to outDirectory and outFile */
@@ -346,6 +363,8 @@ async function getEntities(videoId, userId) {
   fs.unlinkSync(tempPath);
   return [...new Set(entities)];
 }
+
+
 exports.getEntities = getEntities;
 
 exports.parseTextAnnotations = parseTextAnnotations;
