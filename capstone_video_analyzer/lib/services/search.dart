@@ -59,7 +59,7 @@ Future<List<VideoData>> getAllVideoData() async {
           video["timestampGuess"] == null ? false : video["timestampGuess"];
 
       return VideoData(
-          filename: video["filepath"],
+          filename: video["videoId"],
           thumbnailUrl: video["thumbnail"],
           videoUrl: video["video"],
           timestamp: video["timestamp"],
