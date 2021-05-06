@@ -73,3 +73,18 @@ Future<List<VideoData>> getAllVideoData() async {
     return [];
   }
 }
+
+Future<void> deleteVideo(String? filename) async {
+  if (filename == null) return;
+
+  final HttpsCallable callable =
+      FirebaseFunctions.instance.httpsCallable('deleteVideo');
+  // ..timeout = const Duration(seconds: 60);
+  try {
+    await callable.call(
+      <String, dynamic>{'fileName': filename},
+    );
+  } catch (err) {
+    print('Error in search! $err');
+  }
+}
