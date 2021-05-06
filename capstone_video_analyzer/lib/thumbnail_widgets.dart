@@ -21,30 +21,42 @@ class _ThumbnailGridState extends State<ThumbnailGrid> {
   Widget build(BuildContext context) {
     return GridView.builder(
         itemCount: widget.videoDataList.length,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 9/16,
-              crossAxisSpacing: 1,
-              mainAxisSpacing: 1
-              ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 9 / 16,
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1),
         itemBuilder: (BuildContext context, int index) {
           final videoData = widget.videoDataList[index];
-          return ThumbCard(videoData);
+          return ThumbCard(videoData, _deleteVideo);
         });
+  }
+
+  void _deleteVideo(String url) {
+    var videoDataList = widget.videoDataList;
+    for (var i = 0; i < videoDataList.length; i++) {
+      var videoData = videoDataList[i];
+      if (url == videoData.videoUrl) {
+        setState(() {
+          videoDataList.removeAt(i);
+        });
+        break;
+      }
+    }
   }
 }
 
 class ThumbCard extends StatelessWidget {
   final VideoData videoData;
+  final Function(String) onDeleteVideo;
 
-  const ThumbCard(this.videoData);
+  const ThumbCard(this.videoData, this.onDeleteVideo);
 
   _onTap(BuildContext context) {
-    if (videoData.videoUrl == null) return;
+    if (videoData.videoUrl == null || videoData.filename == null) return;
     Navigator.pushNamed(context, videoPlayerRoute,
-        arguments:
-            VideoPlayerPageArguments(videoData.videoUrl!, labelsString()));
+        arguments: VideoPlayerPageArguments(
+            videoData.videoUrl!, labelsString(), onDeleteVideo));
   }
 
   String labelsString({maxEntities: 10}) {
@@ -69,7 +81,7 @@ class ThumbCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async => {await _onTap(context)},
-        child: ThumbImage(videoData.thumbnailUrl?? ""));
+        child: ThumbImage(videoData.thumbnailUrl ?? ""));
   }
 }
 
@@ -128,7 +140,8 @@ class ThumbImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: imageUrl,
       fit: BoxFit.fill,
-      placeholder: (context, url) => Center(child: Container(child: CircularProgressIndicator())),
+      placeholder: (context, url) =>
+          Center(child: Container(child: CircularProgressIndicator())),
     );
   }
 }
