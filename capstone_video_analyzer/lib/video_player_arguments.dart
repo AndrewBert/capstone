@@ -1,7 +1,8 @@
 class VideoPlayerPageArguments {
   final String videoUrl;
   final String labels;
-  final String? title;
+  final Function(String) onDeleteVideo;
+  
 
-  VideoPlayerPageArguments(this.videoUrl, this.labels, {this.title});
+  VideoPlayerPageArguments(this.videoUrl, this.labels, this.onDeleteVideo);
 }

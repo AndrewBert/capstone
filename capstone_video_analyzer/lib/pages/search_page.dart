@@ -1,4 +1,5 @@
-import 'package:capstone_video_analyzer/services/search.dart';
+import 'package:capstone_video_analyzer/models/video_data.dart';
+import 'package:capstone_video_analyzer/services/cloud_service.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +61,11 @@ class _SearchPageState extends State<SearchPage> {
 
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
-    contentToDisplay = await search(query);
+    contentToDisplay = await CloudService.search(query);
   }
 
   _getAllVideoData() async {
-    contentToDisplay = await getAllVideoData();
+    contentToDisplay = await CloudService.getAllVideoData();
   }
 
   Future<void> _onRefresh() async {

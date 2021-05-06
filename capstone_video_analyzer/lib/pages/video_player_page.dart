@@ -5,12 +5,49 @@ import 'package:video_player/video_player.dart';
 class VideoPlayerPage extends StatelessWidget {
   final String url;
   final String labels;
-  final String? title;
-  VideoPlayerPage(this.url, this.labels, {this.title});
+  final Function(String) onDeleteVideo;
+  VideoPlayerPage(
+    this.url,
+    this.labels,
+    this.onDeleteVideo,
+  );
 
   @override
   Widget build(BuildContext context) {
+    _deleteButtonPressed() async{
+      var deleteSelected = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Delete Video"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: Text('Yes')),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: Text('No')),
+              ],
+            );
+          });
+      if (deleteSelected) {
+        onDeleteVideo(url);
+        Navigator.pop(context);
+      }
+    }
+
     return Scaffold(
+        appBar: AppBar(
+          actions: [
+            IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteButtonPressed())
+          ],
+        ),
         body: SafeArea(
           child: Column(
             children: <Widget>[
@@ -46,8 +83,7 @@ class _VideoViewerState extends State<VideoViewer> {
         autoPlay: true,
         showControls: true,
         autoInitialize: true,
-        aspectRatio: 9/16
-        );
+        aspectRatio: 9 / 16);
   }
 
   @override
