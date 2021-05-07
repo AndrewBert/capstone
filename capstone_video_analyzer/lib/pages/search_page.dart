@@ -255,20 +255,26 @@ class SearchResultsListView extends StatefulWidget {
 class _SearchResultsListViewState extends State<SearchResultsListView> {
   @override
   Widget build(BuildContext context) {
-    if (widget.searchResults == null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.search,
-              size: 64,
+    if (widget.searchResults.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 65),
+        child: Center(
+          child: Container(
+            child: ListView(
+              children: [
+                Icon(
+                  Icons.search,
+                  size: 64,
+                ),
+                Center(
+                  child: Text(
+                    'No videos found',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                )
+              ],
             ),
-            Text(
-              'Start searching',
-              style: Theme.of(context).textTheme.headline5,
-            )
-          ],
+          ),
         ),
       );
     }
