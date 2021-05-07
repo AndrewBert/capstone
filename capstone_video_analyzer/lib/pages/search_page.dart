@@ -57,6 +57,10 @@ class _SearchPageState extends State<SearchPage> {
     addSearchTerm(term);
   }
 
+  void _resetSelectedTerm() {
+    selectedTerm = "Search";
+  }
+
   Future? resultsFuture;
 
   _getResults(String? query) async {
@@ -70,7 +74,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _onRefresh() async {
     setState(() {
-      selectedTerm = "Search";
+      _resetSelectedTerm();
       resultsFuture = _getAllVideoData();
     });
   }
