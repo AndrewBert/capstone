@@ -21,7 +21,7 @@ const algoliasearch = require('algoliasearch');
 const encode = require('hashcode').hashCode;
 require('dotenv').config();
 
-exports.getKey = async function(userid) {
+exports.getKey = async function (userid) {
   const params = {
     // This filter ensures that only documents
     // where author == user_id will be readable
@@ -31,19 +31,19 @@ exports.getKey = async function(userid) {
   };
 
   const client = algoliasearch(
-      process.env.ALGOLIA_APPID,
-      process.env.ALGOLIA_ADMIN_APIKEY,
+    process.env.ALGOLIA_APPID,
+    process.env.ALGOLIA_ADMIN_APIKEY,
   );
 
   // Call the Algolia API to generate a unique key based on our search key
   const key = await client.generateSecuredApiKey(
-      process.env.ALGOLIA_SEARCH_KEY,
-      params,
+    process.env.ALGOLIA_SEARCH_KEY,
+    params,
   );
   return key;
 };
 
-exports.search = async function(query, userid) {
+exports.search = async function (query, userid) {
   /* In Algolia, we associatete records with users by storing
   userid as a tag. Here, we userids from algolia records */
   function _getUserid(tags) {
@@ -52,51 +52,68 @@ exports.search = async function(query, userid) {
     })[0];
   }
   const client = algoliasearch(
-      process.env.ALGOLIA_APPID,
-      process.env.ALGOLIA_ADMIN_APIKEY,
+    process.env.ALGOLIA_APPID,
+    process.env.ALGOLIA_ADMIN_APIKEY,
   );
   const index = client.initIndex(process.env.ALGOLIA_INDEX);
   const res = await index.search(query, {
     tagFilters: [userid],
-    attributesToRetrieve: ['videoId', 'transcript', 'text', 'entity', '_tags'],
+    attributesToRetrieve: ['videoId', 'transcript', 'text', 'entity', '_tags', 'objectID'],
   });
   if (!res.nbHits) return [];
+  console.log(`Hit Object ID${res.hits[0]['objectID']}`);
   return res.hits
-      .filter((hit, index) => {
-        return res.hits.findIndex((h) => h.videoId == hit.videoId) == index;
-      })
-      .map((hit) => {
-        return {videoId: hit['videoId'], userId: _getUserid(hit['_tags'])};
-      });
+    .filter((hit, index) => {
+      return res.hits.findIndex((h) => h.videoId == hit.videoId) == index;
+    })
+    .map((hit) => {
+      return { videoId: hit['videoId'], userId: _getUserid(hit['_tags']) };
+    });
 };
 
-exports.save = async function(
-    userId,
-    videoId,
-    transcriptJson,
-    shotLabelJson,
-    textJson,
-    timestamp,
+exports.delete = async function (videoId, userId) {
+  const client = algoliasearch(
+    process.env.ALGOLIA_APPID,
+    process.env.ALGOLIA_ADMIN_APIKEY,
+  );
+  const index = client.initIndex(process.env.ALGOLIA_INDEX);
+  await index.deleteBy({
+    //not sure if this syntax is right
+    filters:`videoId:${videoId}`
+  }).then(() => {
+    console.log("Document deleted from algolia!");
+  }).catch((error) => {
+    console.log(`Error removing document from algolia ${error}`);
+  })
+}
+
+exports.save = async function (
+  userId,
+  videoId,
+  transcriptJson,
+  shotLabelJson,
+  textJson,
+  timestamp,
 ) {
   function _generateId(obj, annotationType) {
     // A unique ID to prevent duplicates
     return Math.abs(
-        encode().value(
-            videoId.toString() +
-          (obj.text || obj.entity || obj.transcript) +
-          obj.start_time +
-          annotationType,
-        ),
+      encode().value(
+        videoId.toString() +
+        (obj.text || obj.entity || obj.transcript) +
+        obj.start_time +
+        annotationType,
+      ),
     );
   }
 
   const client = algoliasearch(
-      process.env.ALGOLIA_APPID,
-      process.env.ALGOLIA_ADMIN_APIKEY,
+    process.env.ALGOLIA_APPID,
+    process.env.ALGOLIA_ADMIN_APIKEY,
   );
   const index = client.initIndex(process.env.ALGOLIA_INDEX);
   console.log(
-      `Createtd algolia index client for index ${process.env.ALOGLIA_INDEX}`,
+    `Createtd algolia index client for index ${process.env.ALOGLIA_INDEX}`,
   );
 
   // Adding tags lets us restrict values by user, and search by annotation type.
