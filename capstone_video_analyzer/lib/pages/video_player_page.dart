@@ -83,6 +83,9 @@ class _VideoViewerState extends State<VideoViewer> {
         autoPlay: true,
         showControls: true,
         autoInitialize: true,
+        looping: true,
+        allowPlaybackSpeedChanging: false,
+        allowMuting: false,
         aspectRatio: 9 / 16);
   }
 
