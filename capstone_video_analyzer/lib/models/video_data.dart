@@ -16,6 +16,12 @@ class VideoData {
       : timestamp = timestamp != null
             ? DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true)
             : null;
+
+  VideoData.fromJson(Map json)
+    : filename = json['videoId'],
+    thumbnailUrl = json['thumbnail'],
+    videoUrl = json['video'],
+    timestamp = json['timestampe'],
+    timestampGuess = false,
+    entities = json['entities'] ?? [];
 }
-
-
