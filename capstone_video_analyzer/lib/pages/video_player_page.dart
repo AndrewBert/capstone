@@ -34,7 +34,7 @@ class VideoPlayerPage extends StatelessWidget {
               ],
             );
           });
-      if (deleteSelected) {
+      if (deleteSelected != null && deleteSelected) {
         onDeleteVideo(url);
         Navigator.pop(context);
       }
