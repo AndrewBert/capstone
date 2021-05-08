@@ -322,6 +322,8 @@ function parseTranscript(jsonBlob) {
 }
 exports.parseTranscript = parseTranscript;
 
+//TODO figure out how to get shot categories
+
 /* Image labels (i.e. snow, baby laughing, bridal shower)*/
 function parseShotLabelAnnotations(jsonBlob) {
   return jsonBlob.annotation_results
