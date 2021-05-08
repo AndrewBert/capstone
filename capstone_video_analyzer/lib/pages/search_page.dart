@@ -100,12 +100,13 @@ class _SearchPageState extends State<SearchPage> {
     final bool showFab = MediaQuery.of(context).viewInsets.bottom == 0.0;
     return Scaffold(
       floatingActionButton: showFab ? UploadButton() : null,
-      body: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: FloatingSearchBar(
-          controller: controller,
-          body: FloatingSearchBarScrollNotifier(
-            child: FutureBuilder(
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: FloatingSearchBar(
+            // margins: EdgeInsets.only(),
+            controller: controller,
+            body: FutureBuilder(
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
