@@ -12,15 +12,9 @@ class CloudService {
       );
       final List<VideoData> response =
           result.data['hits'].map<VideoData>((hit) {
-        bool timestampGuess =
-            hit["timestampGuess"] == null ? false : hit["timestampGuess"];
-        return VideoData(
-            filename: hit["filepath"],
-            thumbnailUrl: hit["thumbnail"],
-            videoUrl: hit["video"],
-            timestamp: hit["timestamp"],
-            timestampGuess: timestampGuess,
-            entities: hit["entities"] ?? []);
+        // bool timestampGuess =
+        //     hit["timestampGuess"] == null ? false : hit["timestampGuess"];
+        return VideoData.fromJson(hit);
       }).toList();
       return response;
     } catch (err) {
@@ -38,16 +32,10 @@ class CloudService {
 
       final List<VideoData> response =
           result.data['videoData'].map<VideoData>((video) {
-        bool timestampGuess =
-            video["timestampGuess"] == null ? false : video["timestampGuess"];
+        // bool timestampGuess =
+        //     video["timestampGuess"] == null ? false : video["timestampGuess"];
 
-        return VideoData(
-            filename: video["videoId"],
-            thumbnailUrl: video["thumbnail"],
-            videoUrl: video["video"],
-            timestamp: video["timestamp"],
-            timestampGuess: timestampGuess,
-            entities: video["entities"] ?? []);
+        return VideoData.fromJson(video);
       }).toList();
 
       return response;
