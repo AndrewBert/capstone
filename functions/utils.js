@@ -339,6 +339,10 @@ function parseShotLabelAnnotations(jsonBlob) {
     })
     .flatMap((annotation) => {
       return annotation.shot_label_annotations.flatMap((annotation) => {
+        if(annotation.category_entities[0] != null){
+          console.log(`First Category: ${annotation.category_entities[0].description}`);
+        }
+        console.log();
         return annotation.segments.flatMap((segment) => {
           return {
             text: null,
