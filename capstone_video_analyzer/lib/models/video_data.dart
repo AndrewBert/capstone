@@ -26,5 +26,11 @@ class VideoData {
         timestamp = json['timestampe'],
         timestampGuess = false,
         entities = json['entities'] ?? [],
-        categories = json['categories'] ?? [];
+        categories = _removeNullFromSet(json['categories']);
+
+  static List _removeNullFromSet(List list) {
+    var newList = List.from(list);
+    newList.removeWhere((value) => value == null);
+    return newList;
+  }
 }
