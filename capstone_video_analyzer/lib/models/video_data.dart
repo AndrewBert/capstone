@@ -5,7 +5,7 @@ class VideoData {
   final DateTime? timestamp;
   final List<dynamic>? entities;
   final bool timestampGuess;
-  final List<dynamic>? categories;
+  final List<String?>? categories;
 
   VideoData( 
       {this.filename,
@@ -28,9 +28,10 @@ class VideoData {
         entities = json['entities'] ?? [],
         categories = _removeNullFromSet(json['categories']);
 
-  static List _removeNullFromSet(List list) {
-    var newList = List.from(list);
-    newList.removeWhere((value) => value == null);
-    return newList;
+  static List<String> _removeNullFromSet(List list) {
+    List<String?> oldList = List.from(list);
+    oldList.removeWhere((value) => value == null);
+    List<String> nList = List.from(oldList);
+    return nList;
   }
 }
