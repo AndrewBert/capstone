@@ -349,7 +349,6 @@ function parseShotLabelAnnotations(jsonBlob) {
         if (annotation.category_entities != null) {
           if (annotation.category_entities[0] != null) {
             category = annotation.category_entities[0].description;
-            console.log(`First Category: ${category}`);
           }
         }
         return annotation.segments.flatMap((segment) => {
