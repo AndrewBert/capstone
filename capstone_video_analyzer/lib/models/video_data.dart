@@ -5,7 +5,7 @@ class VideoData {
   final DateTime? timestamp;
   final List<dynamic>? entities;
   final bool timestampGuess;
-  final List<String?>? categories;
+  final List<String>? categories;
 
   VideoData( 
       {this.filename,
