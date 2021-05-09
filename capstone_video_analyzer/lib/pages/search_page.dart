@@ -19,7 +19,11 @@ class _SearchPageState extends State<SearchPage> {
 
   String? selectedTerm;
 
-  List<VideoData> contentToDisplay = [];
+  List<VideoData> searchResults = [];
+
+  Set<String> categoryNames = Set();
+
+  Map<String, List<VideoData>> categories = Map();
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -65,11 +69,27 @@ class _SearchPageState extends State<SearchPage> {
 
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
-    contentToDisplay = await CloudService.search(query);
+    searchResults = await CloudService.search(query);
   }
 
   _getAllVideoData() async {
-    contentToDisplay = await CloudService.getAllVideoData();
+    searchResults = await CloudService.getAllVideoData();
+    var temp = <String>[];
+    for (var videoData in searchResults) {
+      temp = temp + videoData.categories;
+    }
+    categoryNames = temp.toSet();
+    for (var category in categoryNames) {
+      for (var videoData in searchResults) {
+        if (videoData.categories.contains(category)) {
+          if (categories[category] == null) {
+            categories[category] = [];
+          }
+          categories[category]!.add(videoData);
+        }
+      }
+    }
+    print('');
   }
 
   Future<void> _onRefresh() async {
@@ -111,7 +131,7 @@ class _SearchPageState extends State<SearchPage> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return SearchResultsListView(
-                    searchResults: contentToDisplay,
+                    searchResults: searchResults,
                   );
                 }
 

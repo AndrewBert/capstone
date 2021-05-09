@@ -5,7 +5,7 @@ class VideoData {
   final DateTime? timestamp;
   final List<dynamic>? entities;
   final bool timestampGuess;
-  final List<String>? categories;
+  final List<String> categories;
 
   VideoData( 
       {this.filename,
@@ -14,7 +14,7 @@ class VideoData {
       int? timestamp,
       this.timestampGuess = false,
       this.entities,
-      this.categories})
+      this.categories = const []})
       : timestamp = timestamp != null
             ? DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true)
             : null;
