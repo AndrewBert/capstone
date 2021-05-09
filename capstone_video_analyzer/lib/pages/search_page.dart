@@ -254,6 +254,20 @@ class SearchResultsListView extends StatefulWidget {
 }
 
 class _SearchResultsListViewState extends State<SearchResultsListView> {
+  void _deleteVideo(String url) {
+    var videoDataList = widget.searchResults;
+    for (var i = 0; i < videoDataList.length; i++) {
+      var videoData = videoDataList[i];
+      if (url == videoData.videoUrl) {
+        setState(() {
+          videoDataList.removeAt(i);
+          CloudService.deleteVideoFromCloud(videoData.filename);
+        });
+        break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.searchResults.isEmpty) {
@@ -282,9 +296,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     return Container(
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.only(
-              top: 60),
-          child: ThumbnailGrid(widget.searchResults),
+          padding: const EdgeInsets.only(top: 60),
+          child: ThumbnailGrid(widget.searchResults, _deleteVideo),
         ));
   }
 }
