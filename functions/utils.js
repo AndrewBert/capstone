@@ -345,14 +345,13 @@ function parseShotLabelAnnotations(jsonBlob) {
     })
     .flatMap((annotation) => {
       return annotation.shot_label_annotations.flatMap((annotation) => {
-        var category = "";
+        var category;
         if (annotation.category_entities != null) {
           if (annotation.category_entities[0] != null) {
             category = annotation.category_entities[0].description;
             console.log(`First Category: ${category}`);
           }
         }
-        console.log();
         return annotation.segments.flatMap((segment) => {
           return {
             text: null,
@@ -361,7 +360,7 @@ function parseShotLabelAnnotations(jsonBlob) {
             confidence: segment.confidence,
             start_time: segment.segment.start_time_offset.seconds || 0,
             end_time: segment.segment.end_time_offset.seconds,
-            categories: category
+            categories: category || null
           };
         });
       });
@@ -409,9 +408,8 @@ async function getBlobOfVideo(videoId, userId) {
   });
   const rawdata = fs.readFileSync(tempPath);
   const jsonBlob = JSON.parse(rawdata);
-  let categories = []
-  let entities = [];
-  let parse = parseShotLabelAnnotations(jsonBlob);
+ 
+  let parsed = parseShotLabelAnnotations(jsonBlob);
  
   fs.unlinkSync(tempPath);
   return parsed;
