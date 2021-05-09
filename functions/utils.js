@@ -108,6 +108,13 @@ async function getVideoDataById(videoId, userId) {
     console.log(`Could not grab entities for movie: ${err}`);
   }
 
+  let categories = [];
+  try {
+    entities = await getCategories(videoId, userId);
+  } catch (err) {
+    console.log(`Could not grab categories for movie: ${err}`);
+  }
+
   let videoMap = {
     videoId: videoId,
     entities: entities,
@@ -115,6 +122,7 @@ async function getVideoDataById(videoId, userId) {
     timestampGuess: data['timestampGuess'],
     video: videoLink,
     thumbnail: thumbLink,
+    categories: categories
   };
 
   return videoMap;
@@ -389,6 +397,33 @@ async function getEntities(videoId, userId) {
   const jsonBlob = JSON.parse(rawdata);
   const entities = parseShotLabelAnnotations(jsonBlob).map((blob) => {
     return blob.entity;
+  });
+  fs.unlinkSync(tempPath);
+  return [...new Set(entities)];
+}
+
+
+exports.getEntities = getEntities;
+
+/* Given a videoId and a userId, gets image labels found in a photo. */
+async function getCategories(videoId, userId) {
+  const fileId = `${Math.floor(Math.random() * 1000000)}.json`;
+  const tempPath = path.join(os.tmpdir(), fileId);
+  const cloudFile = admin
+    .storage()
+    .bucket(process.env.VIDEO_JSON_BUCKET)
+    .file(`${userId}/${videoId}.json`);
+  const exists = await cloudFile.exists();
+  if (!exists) {
+    throw new Error(`File ${userId}/${videoId}.json does not exist`);
+  }
+  await cloudFile.download({
+    destination: tempPath,
+  });
+  const rawdata = fs.readFileSync(tempPath);
+  const jsonBlob = JSON.parse(rawdata);
+  const entities = parseShotLabelAnnotations(jsonBlob).map((blob) => {
+    return blob.categories;
   });
   fs.unlinkSync(tempPath);
   return [...new Set(entities)];
