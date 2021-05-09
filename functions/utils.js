@@ -110,7 +110,7 @@ async function getVideoDataById(videoId, userId) {
 
   let categories = [];
   try {
-    entities = await getCategories(videoId, userId);
+    categories = await getCategories(videoId, userId);
   } catch (err) {
     console.log(`Could not grab categories for movie: ${err}`);
   }
@@ -426,14 +426,14 @@ async function getCategories(videoId, userId) {
   });
   const rawdata = fs.readFileSync(tempPath);
   const jsonBlob = JSON.parse(rawdata);
-  const entities = parseShotLabelAnnotations(jsonBlob).map((blob) => {
+  const categories = parseShotLabelAnnotations(jsonBlob).map((blob) => {
     return blob.categories;
   });
   fs.unlinkSync(tempPath);
-  return [...new Set(entities)];
+  return [...new Set(categories)];
 }
 
 
-exports.getEntities = getEntities;
+exports.getCategories = getCategories;
 
 exports.parseTextAnnotations = parseTextAnnotations;
