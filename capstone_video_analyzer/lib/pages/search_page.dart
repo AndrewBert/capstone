@@ -1,6 +1,7 @@
 import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:capstone_video_analyzer/services/cloud_service.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
+import 'package:capstone_video_analyzer/widgets/category_list.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
@@ -89,7 +90,6 @@ class _SearchPageState extends State<SearchPage> {
         }
       }
     }
-    print('');
   }
 
   Future<void> _onRefresh() async {
@@ -97,6 +97,20 @@ class _SearchPageState extends State<SearchPage> {
       _resetSelectedTerm();
       resultsFuture = _getAllVideoData();
     });
+  }
+
+   void _deleteVideo(String url) {
+    var videoDataList = searchResults;
+    for (var i = 0; i < videoDataList.length; i++) {
+      var videoData = videoDataList[i];
+      if (url == videoData.videoUrl) {
+        setState(() {
+          videoDataList.removeAt(i);
+          CloudService.deleteVideoFromCloud(videoData.filename);
+        });
+        break;
+      }
+    }
   }
 
   late FloatingSearchBarController controller;
@@ -130,9 +144,7 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  return SearchResultsListView(
-                    searchResults: searchResults,
-                  );
+                  return CategoryList(_deleteVideo, categories);
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -263,30 +275,16 @@ class _SearchPageState extends State<SearchPage> {
 
 class SearchResultsListView extends StatefulWidget {
   final List<VideoData> searchResults;
+  final Function(String) onDeleteVideo;
 
-  SearchResultsListView({
-    Key? key,
-    required this.searchResults,
-  }) : super(key: key);
+  SearchResultsListView(this.searchResults, this.onDeleteVideo);
 
   @override
   _SearchResultsListViewState createState() => _SearchResultsListViewState();
 }
 
 class _SearchResultsListViewState extends State<SearchResultsListView> {
-  void _deleteVideo(String url) {
-    var videoDataList = widget.searchResults;
-    for (var i = 0; i < videoDataList.length; i++) {
-      var videoData = videoDataList[i];
-      if (url == videoData.videoUrl) {
-        setState(() {
-          videoDataList.removeAt(i);
-          CloudService.deleteVideoFromCloud(videoData.filename);
-        });
-        break;
-      }
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -317,7 +315,7 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.only(top: 60),
-          child: ThumbnailGrid(widget.searchResults, _deleteVideo),
+          child: ThumbnailGrid(widget.searchResults, widget.onDeleteVideo),
         ));
   }
 }
