@@ -14,7 +14,7 @@ class VideoPlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _deleteButtonPressed() async {
+    _deleteButtonPressed() async{
       var deleteSelected = await showDialog(
           context: context,
           builder: (context) {
@@ -41,39 +41,21 @@ class VideoPlayerPage extends StatelessWidget {
     }
 
     return Scaffold(
-        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          leading: IconButton(
-            iconSize: 30,
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
           actions: [
-            PopupMenuButton(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: Text('View tags'),
-                  value: 1,
-                ),
-                PopupMenuItem(
-                  child: Text('Delete'),
-                  value: 2,
-                ),
-              ],
-              onSelected: (value) {
-                if (value == 1) {
-                  //show tags
-                }
-                if (value == 2) {
-                  _deleteButtonPressed();
-                }
-              },
-            )
+            IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteButtonPressed())
           ],
         ),
-        body: VideoViewer(url));
+        body: SafeArea(
+          child: Column(
+            children: <Widget>[
+              SingleChildScrollView(child: Text(labels)),
+              Expanded(child: Center(child: VideoViewer(url))),
+            ],
+          ),
+        ));
   }
 }
 
