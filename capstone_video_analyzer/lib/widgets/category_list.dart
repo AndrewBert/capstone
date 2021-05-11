@@ -1,30 +1,18 @@
 import 'package:capstone_video_analyzer/models/category.dart';
-import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:flutter/material.dart';
 
 import '../thumbnail_widgets.dart';
 
-class CategoryList extends StatefulWidget {
+class CategoryList extends StatelessWidget {
   final Function(String) onDeleteVideo;
   final List<Category> categories;
 
   CategoryList(this.onDeleteVideo, this.categories);
 
   @override
-  _CategoryListState createState() => _CategoryListState();
-}
-
-class _CategoryListState extends State<CategoryList> {
-  @override
-  void initState() {
-    super.initState();
-    widget.categories.sort(
-        (b, a) => a.videoDataList.length.compareTo(b.videoDataList.length));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var categories = widget.categories;
+    categories.sort(
+        (b, a) => a.videoDataList.length.compareTo(b.videoDataList.length));
     return Container(
       padding: EdgeInsets.only(top: 60),
       height: 50,
@@ -49,7 +37,7 @@ class _CategoryListState extends State<CategoryList> {
                         child: AspectRatio(
                             aspectRatio: 9 / 16,
                             child: ThumbCard(
-                                videoDataList[i], widget.onDeleteVideo)),
+                                videoDataList[i], onDeleteVideo)),
                       );
                     },
                   ),
