@@ -1,31 +1,40 @@
+import 'package:capstone_video_analyzer/models/category.dart';
 import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:flutter/material.dart';
 
 import '../thumbnail_widgets.dart';
 
-class CategoryList extends StatelessWidget {
+class CategoryList extends StatefulWidget {
   final Function(String) onDeleteVideo;
-  final Map<String, List<VideoData>> categories;
+  final List<Category> categories;
 
   CategoryList(this.onDeleteVideo, this.categories);
 
+  @override
+  _CategoryListState createState() => _CategoryListState();
+}
 
+class _CategoryListState extends State<CategoryList> {
+  @override
+  void initState() {
+    super.initState();
+    widget.categories.sort(
+        (b, a) => a.videoDataList.length.compareTo(b.videoDataList.length));
+  }
 
   @override
   Widget build(BuildContext context) {
-    var allVideoData = categories.values.toList();
-    var categoryNames = categories.keys.toList();
+    var categories = widget.categories;
     return Container(
       padding: EdgeInsets.only(top: 60),
       height: 50,
       child: ListView.builder(
-        
-          itemCount: allVideoData.length,
+          itemCount: categories.length,
           itemBuilder: (BuildContext context, int index) {
-            final videoDataList = allVideoData[index];
+            final videoDataList = categories[index].videoDataList;
             return Column(
               children: [
-                Text(categoryNames[index]),
+                Text(categories[index].name),
                 Container(
                   alignment: Alignment.centerLeft,
                   height: 300,
@@ -37,7 +46,10 @@ class CategoryList extends StatelessWidget {
                     itemBuilder: (BuildContext context, int i) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 1),
-                        child: AspectRatio(aspectRatio: 9/16, child: ThumbCard(videoDataList[i], onDeleteVideo)),
+                        child: AspectRatio(
+                            aspectRatio: 9 / 16,
+                            child: ThumbCard(
+                                videoDataList[i], widget.onDeleteVideo)),
                       );
                     },
                   ),

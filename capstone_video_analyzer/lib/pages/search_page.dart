@@ -1,3 +1,4 @@
+import 'package:capstone_video_analyzer/models/category.dart';
 import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:capstone_video_analyzer/services/cloud_service.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
@@ -22,9 +23,7 @@ class _SearchPageState extends State<SearchPage> {
 
   List<VideoData> searchResults = [];
 
-  Set<String> categoryNames = Set();
-
-  Map<String, List<VideoData>> categories = Map();
+  List<Category> categories = [];
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -75,20 +74,25 @@ class _SearchPageState extends State<SearchPage> {
 
   _getAllVideoData() async {
     searchResults = await CloudService.getAllVideoData();
+    _categorizeVideos();
+  }
+
+  _categorizeVideos() {
+    categories = [];
     var temp = <String>[];
     for (var videoData in searchResults) {
       temp = temp + videoData.categories;
     }
-    categoryNames = temp.toSet();
-    for (var category in categoryNames) {
+    var categoryNames = temp.toSet();
+    for (var categoryName in categoryNames) {
+      var videoList = <VideoData>[];
+      var categoryItem = Category(categoryName, videoList);
       for (var videoData in searchResults) {
-        if (videoData.categories.contains(category)) {
-          if (categories[category] == null) {
-            categories[category] = [];
-          }
-          categories[category]!.add(videoData);
+        if (videoData.categories.contains(categoryName)) {
+          categoryItem.videoDataList.add(videoData);
         }
       }
+      categories.add(categoryItem);
     }
   }
 
@@ -99,13 +103,14 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-   void _deleteVideo(String url) {
+  void _deleteVideo(String url) {
     var videoDataList = searchResults;
     for (var i = 0; i < videoDataList.length; i++) {
       var videoData = videoDataList[i];
       if (url == videoData.videoUrl) {
         setState(() {
           videoDataList.removeAt(i);
+          _categorizeVideos();
           CloudService.deleteVideoFromCloud(videoData.filename);
         });
         break;
@@ -284,8 +289,6 @@ class SearchResultsListView extends StatefulWidget {
 }
 
 class _SearchResultsListViewState extends State<SearchResultsListView> {
- 
-
   @override
   Widget build(BuildContext context) {
     if (widget.searchResults.isEmpty) {
