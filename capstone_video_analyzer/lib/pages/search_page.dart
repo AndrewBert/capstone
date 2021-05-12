@@ -188,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (searchResults.isEmpty && showAllVideos == false) {
+                  if (searchResults.isEmpty && showAllVideos == false || allSearchResults.isEmpty) {
                     return Center(
                       child: Container(
                         child: Column(
