@@ -86,10 +86,10 @@ class _SearchPageState extends State<SearchPage> {
   _getAllVideoData() async {
     allSearchResults = await CloudService.getAllVideoData();
     searchResults = allSearchResults;
-    _categorizeVideos(allVideos: true);
+    _categorizeVideos();
   }
 
-  _categorizeVideos({bool allVideos = false}) {
+  _categorizeVideos() {
     var tempCategories = <Category>[];
     var tempCategoryNames = <String>[];
     for (var videoData in searchResults) {
@@ -106,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
       }
       tempCategories.add(categoryItem);
     }
-    if (allVideos) {
+    if (showAllVideos) {
       allCategories = tempCategories;
       categories = allCategories;
     } else {
