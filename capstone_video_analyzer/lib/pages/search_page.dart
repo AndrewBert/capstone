@@ -25,6 +25,8 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Category> categories = [];
 
+  var categoryView = false;
+
   List<String> filterSearchTerms({
     required String? filter,
   }) {
@@ -70,6 +72,7 @@ class _SearchPageState extends State<SearchPage> {
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
     searchResults = await CloudService.search(query);
+    _categorizeVideos();
   }
 
   _getAllVideoData() async {
@@ -138,6 +141,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final bool showFab = MediaQuery.of(context).viewInsets.bottom == 0.0;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       floatingActionButton: showFab ? UploadButton() : null,
       body: SafeArea(
         child: RefreshIndicator(
@@ -149,7 +153,33 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  return CategoryList(_deleteVideo, categories);
+                  if (searchResults.isEmpty) {
+                    return Center(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 64,
+                            ),
+                            Center(
+                              child: Text(
+                                'No videos found',
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (categoryView == true) {
+                    return CategoryList(categories, _deleteVideo);
+                  } else {
+                    return SearchResultsListView(searchResults, _deleteVideo);
+                  }
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -172,8 +202,11 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
 
-                return Container(
-                  color: Colors.white70,
+                return Center(
+                  child: Container(
+                    color: Colors.red,
+                    child: Text('Something went wrong'),
+                  ),
                 );
               },
             ),
@@ -183,7 +216,7 @@ class _SearchPageState extends State<SearchPage> {
               selectedTerm ?? 'Search',
               style: Theme.of(context).textTheme.headline6,
             ),
-            hint: 'Search and find out...',
+            hint: 'Search for a video...',
             actions: [
               FloatingSearchBarAction.searchToClear(),
             ],
@@ -291,27 +324,6 @@ class SearchResultsListView extends StatefulWidget {
 class _SearchResultsListViewState extends State<SearchResultsListView> {
   @override
   Widget build(BuildContext context) {
-    if (widget.searchResults.isEmpty) {
-      return Center(
-        child: Container(
-          child: ListView(
-            children: [
-              Icon(
-                Icons.search,
-                size: 64,
-              ),
-              Center(
-                child: Text(
-                  'No videos found',
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    }
-
     // final fsb = FloatingSearchBar.of(context);
 
     return Container(

@@ -7,7 +7,7 @@ class CategoryList extends StatelessWidget {
   final Function(String) onDeleteVideo;
   final List<Category> categories;
 
-  CategoryList(this.onDeleteVideo, this.categories);
+  CategoryList(this.categories, this.onDeleteVideo);
 
   @override
   Widget build(BuildContext context) {
