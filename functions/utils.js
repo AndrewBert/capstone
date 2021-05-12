@@ -419,7 +419,7 @@ exports.getBlobOfVideo = getBlobOfVideo;
 
 function getEntities(parse) {
   entities = parse.map((blob) => {
-    return blob.entities;
+    return blob.entity;
   });
 
   return [...new Set(entities)];
