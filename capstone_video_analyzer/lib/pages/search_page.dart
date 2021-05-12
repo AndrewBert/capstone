@@ -23,9 +23,17 @@ class _SearchPageState extends State<SearchPage> {
 
   List<VideoData> searchResults = [];
 
+  List<VideoData> allSearchResults = [];
+
   List<Category> categories = [];
 
-  var categoryView = false;
+  List<Category> allCategories = [];
+
+  bool categoryView = true;
+
+  bool showBackButton = false;
+
+  bool showAllVideos = true;
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -76,17 +84,18 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   _getAllVideoData() async {
-    searchResults = await CloudService.getAllVideoData();
-    _categorizeVideos();
+    allSearchResults = await CloudService.getAllVideoData();
+    searchResults = allSearchResults;
+    _categorizeVideos(allVideos: true);
   }
 
-  _categorizeVideos() {
-    categories = [];
-    var temp = <String>[];
+  _categorizeVideos({bool allVideos = false}) {
+    var tempCategories = <Category>[];
+    var tempCategoryNames = <String>[];
     for (var videoData in searchResults) {
-      temp = temp + videoData.categories;
+      tempCategoryNames = tempCategoryNames + videoData.categories;
     }
-    var categoryNames = temp.toSet();
+    var categoryNames = tempCategoryNames.toSet();
     for (var categoryName in categoryNames) {
       var videoList = <VideoData>[];
       var categoryItem = Category(categoryName, videoList);
@@ -95,13 +104,39 @@ class _SearchPageState extends State<SearchPage> {
           categoryItem.videoDataList.add(videoData);
         }
       }
-      categories.add(categoryItem);
+      tempCategories.add(categoryItem);
+    }
+    if (allVideos) {
+      allCategories = tempCategories;
+      categories = allCategories;
+    } else {
+      categories = tempCategories;
+    }
+  }
+
+  Widget _selectView() {
+    var itemsToDisplay;
+    if (categoryView == true) {
+      if (showAllVideos == true) {
+        itemsToDisplay = allCategories;
+      } else {
+        itemsToDisplay = categories;
+      }
+      return CategoryList(itemsToDisplay, _deleteVideo);
+    } else {
+      if (showAllVideos == true) {
+        itemsToDisplay = allSearchResults;
+      } else {
+        itemsToDisplay = searchResults;
+      }
+      return SearchResultsListView(itemsToDisplay, _deleteVideo);
     }
   }
 
   Future<void> _onRefresh() async {
     setState(() {
       _resetSelectedTerm();
+      // showAllVideos = true;
       resultsFuture = _getAllVideoData();
     });
   }
@@ -153,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (searchResults.isEmpty) {
+                  if (searchResults.isEmpty && showAllVideos == false) {
                     return Center(
                       child: Container(
                         child: Column(
@@ -175,11 +210,7 @@ class _SearchPageState extends State<SearchPage> {
                     );
                   }
 
-                  if (categoryView == true) {
-                    return CategoryList(categories, _deleteVideo);
-                  } else {
-                    return SearchResultsListView(searchResults, _deleteVideo);
-                  }
+                  return _selectView();
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -217,7 +248,18 @@ class _SearchPageState extends State<SearchPage> {
               style: Theme.of(context).textTheme.headline6,
             ),
             hint: 'Search for a video...',
+            leadingActions: [
+              FloatingSearchBarAction(
+                  showIfOpened: false, child: _showBackButton()),
+            ],
             actions: [
+              FloatingSearchBarAction(
+                showIfOpened: false,
+                child: CircularButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {},
+                ),
+              ),
               FloatingSearchBarAction.searchToClear(),
             ],
             // onQueryChanged: (query) {
@@ -230,6 +272,8 @@ class _SearchPageState extends State<SearchPage> {
                 addSearchTerm(query);
                 selectedTerm = query;
                 resultsFuture = _getResults(query);
+                showBackButton = true;
+                showAllVideos = false;
               });
               controller.close();
             },
@@ -308,6 +352,23 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
     );
+  }
+
+  Widget _showBackButton() {
+    if (showBackButton) {
+      return CircularButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            showAllVideos = true;
+            showBackButton = false;
+            _resetSelectedTerm();
+          });
+        },
+      );
+    } else {
+      return Container();
+    }
   }
 }
 
