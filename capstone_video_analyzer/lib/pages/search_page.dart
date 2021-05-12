@@ -212,11 +212,11 @@ class _SearchPageState extends State<SearchPage> {
 
                   return Container(
                     padding: EdgeInsets.only(top: 60),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Stack(
                       children: [
+                        Expanded(child: _selectView()),
                         Align(
-                          alignment: Alignment.centerRight,
+                          alignment: Alignment.topRight,
                           child: MaterialButton(
                               color: Colors.white,
                               shape: CircleBorder(),
@@ -227,7 +227,6 @@ class _SearchPageState extends State<SearchPage> {
                                 });
                               }),
                         ),
-                        Expanded(child: _selectView()),
                       ],
                     ),
                   );
