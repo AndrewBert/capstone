@@ -20,7 +20,7 @@ class CategoryList extends StatelessWidget {
             final videoDataList = categories[index].videoDataList;
             return Column(
               children: [
-                Text(categories[index].name),
+                Text(categories[index].name.toUpperCase()),
                 Container(
                   alignment: Alignment.centerLeft,
                   height: 240,
