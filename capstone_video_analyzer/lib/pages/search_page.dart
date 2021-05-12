@@ -218,7 +218,7 @@ class _SearchPageState extends State<SearchPage> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: MaterialButton(
-                            color: Colors.white,
+                              color: Colors.white,
                               shape: CircleBorder(),
                               child: Icon(Icons.sync_alt),
                               onPressed: () {
@@ -276,7 +276,9 @@ class _SearchPageState extends State<SearchPage> {
                 showIfOpened: false,
                 child: CircularButton(
                   icon: const Icon(Icons.refresh),
-                  onPressed: () {},
+                  onPressed: () {
+                    _onRefresh();
+                  },
                 ),
               ),
               FloatingSearchBarAction.searchToClear(),
