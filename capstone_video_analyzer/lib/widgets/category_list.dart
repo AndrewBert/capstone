@@ -14,7 +14,6 @@ class CategoryList extends StatelessWidget {
     categories.sort(
         (b, a) => a.videoDataList.length.compareTo(b.videoDataList.length));
     return Container(
-      height: 50,
       child: ListView.builder(
           itemCount: categories.length,
           itemBuilder: (BuildContext context, int index) {
