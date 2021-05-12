@@ -29,7 +29,7 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Category> allCategories = [];
 
-  bool categoryView = true;
+  bool showCategoryView = false;
 
   bool showBackButton = false;
 
@@ -116,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _selectView() {
     var itemsToDisplay;
-    if (categoryView == true) {
+    if (showCategoryView == true) {
       if (showAllVideos == true) {
         itemsToDisplay = allCategories;
       } else {
@@ -210,7 +210,27 @@ class _SearchPageState extends State<SearchPage> {
                     );
                   }
 
-                  return _selectView();
+                  return Container(
+                    padding: EdgeInsets.only(top: 60),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: MaterialButton(
+                            color: Colors.white,
+                              shape: CircleBorder(),
+                              child: Icon(Icons.sync_alt),
+                              onPressed: () {
+                                setState(() {
+                                  showCategoryView = !showCategoryView;
+                                });
+                              }),
+                        ),
+                        Expanded(child: _selectView()),
+                      ],
+                    ),
+                  );
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -221,8 +241,7 @@ class _SearchPageState extends State<SearchPage> {
                         Container(
                           padding: EdgeInsets.only(bottom: 5),
                           child: CircularProgressIndicator(
-                            backgroundColor: Colors.grey,
-                            strokeWidth: 10,
+                            strokeWidth: 7,
                           ),
                         ),
                         Container(
@@ -388,10 +407,6 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     // final fsb = FloatingSearchBar.of(context);
 
     return Container(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 60),
-          child: ThumbnailGrid(widget.searchResults, widget.onDeleteVideo),
-        ));
+        child: ThumbnailGrid(widget.searchResults, widget.onDeleteVideo));
   }
 }
