@@ -87,7 +87,7 @@ class VideoPlayerPage extends StatelessWidget {
             )
           ],
         ),
-        body: VideoViewer(url));
+        body: Expanded(child: VideoViewer(url)));
   }
 }
 

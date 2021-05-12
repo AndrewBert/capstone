@@ -1,5 +1,4 @@
 import 'package:capstone_video_analyzer/main.dart';
-import 'package:capstone_video_analyzer/pages/gallery_page.dart';
 import 'package:capstone_video_analyzer/pages/search_page.dart';
 import 'package:capstone_video_analyzer/pages/video_player_page.dart';
 import 'package:capstone_video_analyzer/video_player_arguments.dart';
@@ -12,8 +11,6 @@ class RouteGenerator {
     switch (settings.name) {
       case authenticationRoute:
         return MaterialPageRoute(builder: (_) => AuthenticationWrapper());
-      case galleryRoute:
-        return MaterialPageRoute(builder: (_) => GalleryPage());
       case searchRoute:
         return MaterialPageRoute(builder: (_) => SearchPage());
       case videoPlayerRoute: {
