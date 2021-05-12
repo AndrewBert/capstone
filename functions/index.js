@@ -157,7 +157,7 @@ async function processVideoJson(object) {
 
   // Parse annotaitons from output file
   const transcriptJson = utils.parseTranscript(json);
-  const shotLabelJason = utils.parseShotLabelAnnotations(json);
+  const shotLabelJson = utils.parseShotLabelAnnotations(json);
   const textJson = utils.parseTextAnnotations(json);
 
   // Store data to searchable Algolia index
@@ -165,7 +165,7 @@ async function processVideoJson(object) {
       userid,
       videoid,
       transcriptJson,
-      shotLabelJason,
+      shotLabelJson,
       textJson,
   );
 

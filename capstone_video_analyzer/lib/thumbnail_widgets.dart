@@ -7,12 +7,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'models/video_data.dart';
-import 'services/cloud_service.dart';
 
 class ThumbnailGrid extends StatefulWidget {
   final List<VideoData> videoDataList;
+  final Function(String) onDeleteVideo;
 
-  ThumbnailGrid(this.videoDataList);
+  ThumbnailGrid(this.videoDataList, this.onDeleteVideo);
 
   @override
   _ThumbnailGridState createState() => _ThumbnailGridState();
@@ -30,23 +30,11 @@ class _ThumbnailGridState extends State<ThumbnailGrid> {
             mainAxisSpacing: 1),
         itemBuilder: (BuildContext context, int index) {
           final videoData = widget.videoDataList[index];
-          return ThumbCard(videoData, _deleteVideo);
+          return ThumbCard(videoData, widget.onDeleteVideo);
         });
   }
 
-  void _deleteVideo(String url) {
-    var videoDataList = widget.videoDataList;
-    for (var i = 0; i < videoDataList.length; i++) {
-      var videoData = videoDataList[i];
-      if (url == videoData.videoUrl) {
-        setState(() {
-          videoDataList.removeAt(i);
-          CloudService.deleteVideoFromCloud(videoData.filename);
-        });
-        break;
-      }
-    }
-  }
+  
 }
 
 class ThumbCard extends StatelessWidget {

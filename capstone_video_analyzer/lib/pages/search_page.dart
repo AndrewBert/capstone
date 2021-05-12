@@ -1,6 +1,8 @@
+import 'package:capstone_video_analyzer/models/category.dart';
 import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:capstone_video_analyzer/services/cloud_service.dart';
 import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
+import 'package:capstone_video_analyzer/widgets/category_list.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
@@ -19,7 +21,19 @@ class _SearchPageState extends State<SearchPage> {
 
   String? selectedTerm;
 
-  List<VideoData> contentToDisplay = [];
+  List<VideoData> searchResults = [];
+
+  List<VideoData> allSearchResults = [];
+
+  List<Category> categories = [];
+
+  List<Category> allCategories = [];
+
+  bool showCategoryView = false;
+
+  bool showBackButton = false;
+
+  bool showAllVideos = true;
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -65,18 +79,81 @@ class _SearchPageState extends State<SearchPage> {
 
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
-    contentToDisplay = await CloudService.search(query);
+    searchResults = await CloudService.search(query);
+    _categorizeVideos();
   }
 
   _getAllVideoData() async {
-    contentToDisplay = await CloudService.getAllVideoData();
+    allSearchResults = await CloudService.getAllVideoData();
+    searchResults = allSearchResults;
+    _categorizeVideos(allVideos: true);
+  }
+
+  _categorizeVideos({bool allVideos = false}) {
+    var tempCategories = <Category>[];
+    var tempCategoryNames = <String>[];
+    for (var videoData in searchResults) {
+      tempCategoryNames = tempCategoryNames + videoData.categories;
+    }
+    var categoryNames = tempCategoryNames.toSet();
+    for (var categoryName in categoryNames) {
+      var videoList = <VideoData>[];
+      var categoryItem = Category(categoryName, videoList);
+      for (var videoData in searchResults) {
+        if (videoData.categories.contains(categoryName)) {
+          categoryItem.videoDataList.add(videoData);
+        }
+      }
+      tempCategories.add(categoryItem);
+    }
+    if (allVideos) {
+      allCategories = tempCategories;
+      categories = allCategories;
+    } else {
+      categories = tempCategories;
+    }
+  }
+
+  Widget _selectView() {
+    var itemsToDisplay;
+    if (showCategoryView == true) {
+      if (showAllVideos == true) {
+        itemsToDisplay = allCategories;
+      } else {
+        itemsToDisplay = categories;
+      }
+      return CategoryList(itemsToDisplay, _deleteVideo);
+    } else {
+      if (showAllVideos == true) {
+        itemsToDisplay = allSearchResults;
+      } else {
+        itemsToDisplay = searchResults;
+      }
+      return SearchResultsListView(itemsToDisplay, _deleteVideo);
+    }
   }
 
   Future<void> _onRefresh() async {
     setState(() {
       _resetSelectedTerm();
+      // showAllVideos = true;
       resultsFuture = _getAllVideoData();
     });
+  }
+
+  void _deleteVideo(String url) {
+    var videoDataList = searchResults;
+    for (var i = 0; i < videoDataList.length; i++) {
+      var videoData = videoDataList[i];
+      if (url == videoData.videoUrl) {
+        setState(() {
+          videoDataList.removeAt(i);
+          _categorizeVideos();
+          CloudService.deleteVideoFromCloud(videoData.filename);
+        });
+        break;
+      }
+    }
   }
 
   late FloatingSearchBarController controller;
@@ -99,6 +176,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final bool showFab = MediaQuery.of(context).viewInsets.bottom == 0.0;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       floatingActionButton: showFab ? UploadButton() : null,
       body: SafeArea(
         child: RefreshIndicator(
@@ -110,8 +188,48 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  return SearchResultsListView(
-                    searchResults: contentToDisplay,
+                  if (searchResults.isEmpty && showAllVideos == false) {
+                    return Center(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 64,
+                            ),
+                            Center(
+                              child: Text(
+                                'No videos found',
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Container(
+                    padding: EdgeInsets.only(top: 60),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: MaterialButton(
+                            color: Colors.white,
+                              shape: CircleBorder(),
+                              child: Icon(Icons.sync_alt),
+                              onPressed: () {
+                                setState(() {
+                                  showCategoryView = !showCategoryView;
+                                });
+                              }),
+                        ),
+                        Expanded(child: _selectView()),
+                      ],
+                    ),
                   );
                 }
 
@@ -123,8 +241,7 @@ class _SearchPageState extends State<SearchPage> {
                         Container(
                           padding: EdgeInsets.only(bottom: 5),
                           child: CircularProgressIndicator(
-                            backgroundColor: Colors.grey,
-                            strokeWidth: 10,
+                            strokeWidth: 7,
                           ),
                         ),
                         Container(
@@ -135,8 +252,11 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
 
-                return Container(
-                  color: Colors.white70,
+                return Center(
+                  child: Container(
+                    color: Colors.red,
+                    child: Text('Something went wrong'),
+                  ),
                 );
               },
             ),
@@ -146,8 +266,19 @@ class _SearchPageState extends State<SearchPage> {
               selectedTerm ?? 'Search',
               style: Theme.of(context).textTheme.headline6,
             ),
-            hint: 'Search and find out...',
+            hint: 'Search for a video...',
+            leadingActions: [
+              FloatingSearchBarAction(
+                  showIfOpened: false, child: _showBackButton()),
+            ],
             actions: [
+              FloatingSearchBarAction(
+                showIfOpened: false,
+                child: CircularButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {},
+                ),
+              ),
               FloatingSearchBarAction.searchToClear(),
             ],
             // onQueryChanged: (query) {
@@ -160,6 +291,8 @@ class _SearchPageState extends State<SearchPage> {
                 addSearchTerm(query);
                 selectedTerm = query;
                 resultsFuture = _getResults(query);
+                showBackButton = true;
+                showAllVideos = false;
               });
               controller.close();
             },
@@ -239,15 +372,30 @@ class _SearchPageState extends State<SearchPage> {
       ),
     );
   }
+
+  Widget _showBackButton() {
+    if (showBackButton) {
+      return CircularButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            showAllVideos = true;
+            showBackButton = false;
+            _resetSelectedTerm();
+          });
+        },
+      );
+    } else {
+      return Container();
+    }
+  }
 }
 
 class SearchResultsListView extends StatefulWidget {
   final List<VideoData> searchResults;
+  final Function(String) onDeleteVideo;
 
-  SearchResultsListView({
-    Key? key,
-    required this.searchResults,
-  }) : super(key: key);
+  SearchResultsListView(this.searchResults, this.onDeleteVideo);
 
   @override
   _SearchResultsListViewState createState() => _SearchResultsListViewState();
@@ -256,35 +404,9 @@ class SearchResultsListView extends StatefulWidget {
 class _SearchResultsListViewState extends State<SearchResultsListView> {
   @override
   Widget build(BuildContext context) {
-    if (widget.searchResults.isEmpty) {
-      return Center(
-        child: Container(
-          child: ListView(
-            children: [
-              Icon(
-                Icons.search,
-                size: 64,
-              ),
-              Center(
-                child: Text(
-                  'No videos found',
-                  style: Theme.of(context).textTheme.headline5,
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    }
-
     // final fsb = FloatingSearchBar.of(context);
 
     return Container(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(
-              top: 60),
-          child: ThumbnailGrid(widget.searchResults),
-        ));
+        child: ThumbnailGrid(widget.searchResults, widget.onDeleteVideo));
   }
 }
