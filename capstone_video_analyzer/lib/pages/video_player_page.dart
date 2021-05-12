@@ -54,7 +54,7 @@ class VideoPlayerPage extends StatelessWidget {
             PopupMenuButton(
               itemBuilder: (context) => [
                 PopupMenuItem(
-                  child: Text('View tags'),
+                  child: Text('View labels'),
                   value: 1,
                 ),
                 PopupMenuItem(
@@ -62,9 +62,23 @@ class VideoPlayerPage extends StatelessWidget {
                   value: 2,
                 ),
               ],
-              onSelected: (value) {
+              onSelected: (value) async {
                 if (value == 1) {
-                  //show tags
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Labels"),
+                          content: Text(labels),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Done')),
+                          ],
+                        );
+                      });
                 }
                 if (value == 2) {
                   _deleteButtonPressed();
