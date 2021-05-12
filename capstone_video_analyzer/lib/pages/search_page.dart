@@ -1,8 +1,8 @@
 import 'package:capstone_video_analyzer/models/category.dart';
 import 'package:capstone_video_analyzer/models/video_data.dart';
 import 'package:capstone_video_analyzer/services/cloud_service.dart';
-import 'package:capstone_video_analyzer/thumbnail_widgets.dart';
 import 'package:capstone_video_analyzer/widgets/category_list.dart';
+import 'package:capstone_video_analyzer/widgets/thumbnail_grid.dart';
 import 'package:capstone_video_analyzer/widgets/upload_button.dart';
 import 'package:flutter/material.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
@@ -14,26 +14,18 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   static const historyLength = 5;
-
   List<String> _searchHistory = [];
-
   late List<String> filteredSearchHistory;
-
   String? selectedTerm;
-
   List<VideoData> searchResults = [];
-
   List<VideoData> allSearchResults = [];
-
   List<Category> categories = [];
-
   List<Category> allCategories = [];
-
   bool showCategoryView = false;
-
   bool showBackButton = false;
-
   bool showAllVideos = true;
+  Future? resultsFuture;
+  late FloatingSearchBarController controller;
 
   List<String> filterSearchTerms({
     required String? filter,
@@ -47,35 +39,31 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void addSearchTerm(String term) {
+  _addSearchTerm(String term) {
     if (_searchHistory.contains(term)) {
-      putSearchTermFirst(term);
+      _putSearchTermFirst(term);
       return;
     }
-
     _searchHistory.add(term);
     if (_searchHistory.length > historyLength) {
       _searchHistory.removeRange(0, _searchHistory.length - historyLength);
     }
-
     filteredSearchHistory = filterSearchTerms(filter: null);
   }
 
-  void deleteSearchTerm(String term) {
+  _deleteSearchTerm(String term) {
     _searchHistory.removeWhere((t) => t == term);
     filteredSearchHistory = filterSearchTerms(filter: null);
   }
 
-  void putSearchTermFirst(String term) {
-    deleteSearchTerm(term);
-    addSearchTerm(term);
+  _putSearchTermFirst(String term) {
+    _deleteSearchTerm(term);
+    _addSearchTerm(term);
   }
 
-  void _resetSelectedTerm() {
+  _resetSelectedTerm() {
     selectedTerm = "Search";
   }
-
-  Future? resultsFuture;
 
   _getResults(String? query) async {
     if (query == null || query.isEmpty) return;
@@ -114,6 +102,21 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  _deleteVideo(String url) {
+    var videoDataList = searchResults;
+    for (var i = 0; i < videoDataList.length; i++) {
+      var videoData = videoDataList[i];
+      if (url == videoData.videoUrl) {
+        setState(() {
+          videoDataList.removeAt(i);
+          _categorizeVideos();
+          CloudService.deleteVideoFromCloud(videoData.filename);
+        });
+        break;
+      }
+    }
+  }
+
   Widget _selectView() {
     var itemsToDisplay;
     if (showCategoryView == true) {
@@ -129,7 +132,7 @@ class _SearchPageState extends State<SearchPage> {
       } else {
         itemsToDisplay = searchResults;
       }
-      return SearchResultsListView(itemsToDisplay, _deleteVideo);
+      return ThumbnailGrid(itemsToDisplay, _deleteVideo);
     }
   }
 
@@ -141,22 +144,22 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _deleteVideo(String url) {
-    var videoDataList = searchResults;
-    for (var i = 0; i < videoDataList.length; i++) {
-      var videoData = videoDataList[i];
-      if (url == videoData.videoUrl) {
-        setState(() {
-          videoDataList.removeAt(i);
-          _categorizeVideos();
-          CloudService.deleteVideoFromCloud(videoData.filename);
-        });
-        break;
-      }
+  Widget _showBackButton() {
+    if (showBackButton) {
+      return CircularButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            showAllVideos = true;
+            showBackButton = false;
+            _resetSelectedTerm();
+          });
+        },
+      );
+    } else {
+      return Container();
     }
   }
-
-  late FloatingSearchBarController controller;
 
   @override
   void initState() {
@@ -188,7 +191,8 @@ class _SearchPageState extends State<SearchPage> {
               future: resultsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  if (searchResults.isEmpty && showAllVideos == false || allSearchResults.isEmpty) {
+                  if (searchResults.isEmpty && showAllVideos == false ||
+                      allSearchResults.isEmpty) {
                     return Center(
                       child: Container(
                         child: Column(
@@ -289,7 +293,7 @@ class _SearchPageState extends State<SearchPage> {
             // },
             onSubmitted: (query) {
               setState(() {
-                addSearchTerm(query);
+                _addSearchTerm(query);
                 selectedTerm = query;
                 resultsFuture = _getResults(query);
                 showBackButton = true;
@@ -324,7 +328,7 @@ class _SearchPageState extends State<SearchPage> {
                           leading: const Icon(Icons.search),
                           onTap: () {
                             setState(() {
-                              addSearchTerm(controller.query);
+                              _addSearchTerm(controller.query);
                               selectedTerm = controller.query;
                             });
                             controller.close();
@@ -346,13 +350,13 @@ class _SearchPageState extends State<SearchPage> {
                                     icon: const Icon(Icons.clear),
                                     onPressed: () {
                                       setState(() {
-                                        deleteSearchTerm(term);
+                                        _deleteSearchTerm(term);
                                       });
                                     },
                                   ),
                                   onTap: () {
                                     setState(() {
-                                      putSearchTermFirst(term);
+                                      _putSearchTermFirst(term);
                                       selectedTerm = term;
                                       resultsFuture = _getResults(selectedTerm);
                                     });
@@ -372,42 +376,5 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
     );
-  }
-
-  Widget _showBackButton() {
-    if (showBackButton) {
-      return CircularButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          setState(() {
-            showAllVideos = true;
-            showBackButton = false;
-            _resetSelectedTerm();
-          });
-        },
-      );
-    } else {
-      return Container();
-    }
-  }
-}
-
-class SearchResultsListView extends StatefulWidget {
-  final List<VideoData> searchResults;
-  final Function(String) onDeleteVideo;
-
-  SearchResultsListView(this.searchResults, this.onDeleteVideo);
-
-  @override
-  _SearchResultsListViewState createState() => _SearchResultsListViewState();
-}
-
-class _SearchResultsListViewState extends State<SearchResultsListView> {
-  @override
-  Widget build(BuildContext context) {
-    // final fsb = FloatingSearchBar.of(context);
-
-    return Container(
-        child: ThumbnailGrid(widget.searchResults, widget.onDeleteVideo));
   }
 }

@@ -1,7 +1,8 @@
 import 'package:capstone_video_analyzer/models/category.dart';
 import 'package:flutter/material.dart';
 
-import '../thumbnail_widgets.dart';
+import 'thumbnail_card.dart';
+
 
 class CategoryList extends StatelessWidget {
   final Function(String) onDeleteVideo;
