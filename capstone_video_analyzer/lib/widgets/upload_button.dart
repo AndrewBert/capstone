@@ -54,7 +54,7 @@ class UploadButton extends StatelessWidget {
     return Container(
       child: FloatingActionButton(
         onPressed: () => handleUploadType(context),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         child: Icon(Icons.file_upload),
       ),
     );
