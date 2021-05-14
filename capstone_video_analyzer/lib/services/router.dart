@@ -12,7 +12,7 @@ class RouteGenerator {
       case authenticationRoute:
         return MaterialPageRoute(builder: (_) => AuthenticationWrapper());
       case searchRoute:
-        return MaterialPageRoute(builder: (_) => SearchPage());
+        return MaterialPageRoute(builder: (_) => UserLibraryPage());
       case videoPlayerRoute: {
         var arguments = settings.arguments as VideoPlayerPageArguments;
         return MaterialPageRoute(builder: (_) => VideoPlayerPage(arguments.videoUrl, arguments.labels, arguments.onDeleteVideo));
