@@ -324,6 +324,8 @@ class _UserLibraryPageState extends State<UserLibraryPage> {
           // },
           onSubmitted: (query) {
             setState(() {
+              bool blank = query.trim().isEmpty;
+              if (blank) return;
               _addSearchTerm(query);
               selectedTerm = query;
               resultsFuture = _getResults(query);
