@@ -215,7 +215,6 @@ class _UserLibraryPageState extends State<UserLibraryPage> {
       ),
       body: SafeArea(
         child: FloatingSearchBar(
-          // margins: EdgeInsets.only(),
           controller: controller,
           body: FutureBuilder(
             future: resultsFuture,

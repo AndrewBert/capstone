@@ -20,6 +20,7 @@ class UploadButton extends StatelessWidget {
     User? currentUser = context.read<AuthService>().currentUser;
     //TODO throw proper exception instead?
     if (currentUser == null) return null;
+
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Uploading video...')));
 
@@ -55,6 +56,7 @@ class UploadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: FloatingActionButton(
+        
         onPressed: () => handleUploadType(context),
         backgroundColor: Colors.blue,
         child: Icon(Icons.file_upload),
