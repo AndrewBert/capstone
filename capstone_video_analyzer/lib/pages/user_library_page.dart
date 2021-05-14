@@ -185,10 +185,9 @@ class _UserLibraryPageState extends State<UserLibraryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool showFab = MediaQuery.of(context).viewInsets.bottom == 0.0;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: showFab ? UploadButton() : null,
+      floatingActionButton: UploadButton(),
       drawer: SafeArea(
         child: Drawer(
           child: ListView(
