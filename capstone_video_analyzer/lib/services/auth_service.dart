@@ -10,17 +10,10 @@ class AuthService {
 
   User? get currentUser => _firebaseAuth.currentUser;
 
-  /// This won't pop routes so you could do something like
-  /// Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-  /// after you called this method if you want to pop all routes.
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
 
-  /// There are a lot of different ways on how you can do exception handling.
-  /// This is to make it as easy as possible but a better way would be to
-  /// use your own custom class that would take the exception and return better
-  /// error messages. That way you can throw, return or whatever you prefer with that instead.
   Future<String?> signIn({String? email, String? password}) async {
     if (email == null || password == null) return null;
 
@@ -33,10 +26,6 @@ class AuthService {
     }
   }
 
-  /// There are a lot of different ways on how you can do exception handling.
-  /// This is to make it as easy as possible but a better way would be to
-  /// use your own custom class that would take the exception and return better
-  /// error messages. That way you can throw, return or whatever you prefer with that instead.
   Future<String?> signUp({String? email, String? password}) async {
     if (email == null || password == null) return null;
 
