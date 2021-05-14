@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
               width: 250,
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () {
                   context.read<AuthService>().signIn(
                         email: emailController.text.trim(),
@@ -76,8 +76,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 130,
+             Container(
+               margin: EdgeInsets.only(top: 25),
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.green, borderRadius: BorderRadius.circular(20)),
+              child: TextButton(
+                onPressed: () {
+                  context.read<AuthService>().signUp(
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      );
+                },
+                child: Text(
+                  'Sign-Up',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
             ),
             // Text('New User? Create Account')
           ],
