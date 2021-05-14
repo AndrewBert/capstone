@@ -85,19 +85,25 @@ async function getVideoDataById(videoId, userId) {
     console.log(`Error: ${err}`);
   }
 
+
   let entities = [];
+  let categories = [];
+
   try {
-    entities = await getEntities(videoId, userId);
+    let parse = await getBlobOfVideo(videoId, userId);
+    entities = getEntities(parse)
+    categories = getCategories(parse)
   } catch (err) {
-    console.log(`Could not grab entities for movie: ${err}`);
+    console.log(`Could not grab entities and categories for movie: ${err}`);
   }
 
-  let categories = [];
-  try {
-    entities = await getCategories(videoId, userId);
-  } catch (err) {
-    console.log(`Could not grab categories for movie: ${err}`);
-  }
+
+  // let categories = [];
+  // try {
+  //   categories = await getCategories(videoId, userId);
+  // } catch (err) {
+  //   console.log(`Could not grab categories for movie: ${err}`);
+  // }
 
   let videoMap = {
     videoId: videoId,
@@ -179,24 +185,24 @@ exports.deleteVideo = async function (videoId, userId) {
   console.log(`Trying to delete ${videoId}`);
   try {
     await admin
-    .firestore()
-    .collection('users')
-    .doc(userId)
-    .collection('videos')
-    .doc(videoId)
-    .delete()
-    .then(() => {
-      console.log("Document deleted from firestore!");
-    }).catch((error) => {
-      console.log(`Error removing document ${error}`);
-    })
-    
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('videos')
+      .doc(videoId)
+      .delete()
+      .then(() => {
+        console.log("Document deleted from firestore!");
+      }).catch((error) => {
+        console.log(`Error removing document ${error}`);
+      })
+
     //todo this is fragile if file extension is not always these things
     deleteBucketFile(process.env.VIDEO_BUCKET, `${userId}/${videoId}.mp4`)
     deleteBucketFile(process.env.THUMBNAIL_BUCKET, `${userId}/${videoId}.png`)
     deleteBucketFile(process.env.VIDEO_JSON_BUCKET, `${userId}/${videoId}.json`)
 
-   
+
 
   } catch (e) {
     console.log(`Overall Error removing video ${videoId}`);
@@ -323,10 +329,12 @@ function parseShotLabelAnnotations(jsonBlob) {
     })
     .flatMap((annotation) => {
       return annotation.shot_label_annotations.flatMap((annotation) => {
-        if(annotation.category_entities[0] != null){
-          console.log(`First Category: ${annotation.category_entities[0].description}`);
+        var category;
+        if (annotation.category_entities != null) {
+          if (annotation.category_entities[0] != null) {
+            category = annotation.category_entities[0].description;
+          }
         }
-        console.log();
         return annotation.segments.flatMap((segment) => {
           return {
             text: null,
@@ -335,7 +343,7 @@ function parseShotLabelAnnotations(jsonBlob) {
             confidence: segment.confidence,
             start_time: segment.segment.start_time_offset.seconds || 0,
             end_time: segment.segment.end_time_offset.seconds,
-            categories: annotation.category_entities
+            categories: category || null
           };
         });
       });
@@ -367,7 +375,7 @@ function parseTextAnnotations(jsonBlob) {
 }
 
 /* Given a videoId and a userId, gets image labels found in a photo. */
-async function getEntities(videoId, userId) {
+async function getBlobOfVideo(videoId, userId) {
   const fileId = `${Math.floor(Math.random() * 1000000)}.json`;
   const tempPath = path.join(os.tmpdir(), fileId);
   const cloudFile = admin
@@ -383,41 +391,33 @@ async function getEntities(videoId, userId) {
   });
   const rawdata = fs.readFileSync(tempPath);
   const jsonBlob = JSON.parse(rawdata);
-  const entities = parseShotLabelAnnotations(jsonBlob).map((blob) => {
+ 
+  let parsed = parseShotLabelAnnotations(jsonBlob);
+ 
+  fs.unlinkSync(tempPath);
+  return parsed;
+}
+
+exports.getBlobOfVideo = getBlobOfVideo;
+
+
+function getEntities(parse) {
+  entities = parse.map((blob) => {
     return blob.entity;
   });
-  fs.unlinkSync(tempPath);
+
   return [...new Set(entities)];
 }
-
-
 exports.getEntities = getEntities;
 
-/* Given a videoId and a userId, gets image labels found in a photo. */
-async function getCategories(videoId, userId) {
-  const fileId = `${Math.floor(Math.random() * 1000000)}.json`;
-  const tempPath = path.join(os.tmpdir(), fileId);
-  const cloudFile = admin
-    .storage()
-    .bucket(process.env.VIDEO_JSON_BUCKET)
-    .file(`${userId}/${videoId}.json`);
-  const exists = await cloudFile.exists();
-  if (!exists) {
-    throw new Error(`File ${userId}/${videoId}.json does not exist`);
-  }
-  await cloudFile.download({
-    destination: tempPath,
-  });
-  const rawdata = fs.readFileSync(tempPath);
-  const jsonBlob = JSON.parse(rawdata);
-  const entities = parseShotLabelAnnotations(jsonBlob).map((blob) => {
+function getCategories(parse) {
+  let categories = parse.map((blob) => {
     return blob.categories;
   });
-  fs.unlinkSync(tempPath);
-  return [...new Set(entities)];
+
+  return [...new Set(categories)];
 }
 
-
-exports.getEntities = getEntities;
+exports.getCategories = getCategories;
 
 exports.parseTextAnnotations = parseTextAnnotations;
