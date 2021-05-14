@@ -20,6 +20,8 @@ class UploadButton extends StatelessWidget {
     User? currentUser = context.read<AuthService>().currentUser;
     //TODO throw proper exception instead?
     if (currentUser == null) return null;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Uploading video...')));
 
     UploadTask uploadTask;
 
