@@ -79,6 +79,12 @@ class _UserLibraryPageState extends State<UserLibraryPage> {
     _categorizeVideos();
   }
 
+  _search(String? query) {
+    if (query == null || query.isEmpty) return;
+    showAllVideos = false;
+    resultsFuture = _getResults(query);
+  }
+
   _categorizeVideos() {
     var tempCategories = <Category>[];
     var tempCategoryNames = <String>[];
@@ -383,7 +389,8 @@ class _UserLibraryPageState extends State<UserLibraryPage> {
                                   setState(() {
                                     _putSearchTermFirst(term);
                                     selectedTerm = term;
-                                    resultsFuture = _getResults(selectedTerm);
+                                    _search(term);
+                                    showBackButton = true;
                                   });
                                   controller.close();
                                 },
