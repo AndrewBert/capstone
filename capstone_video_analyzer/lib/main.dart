@@ -1,5 +1,4 @@
-import 'package:capstone_video_analyzer/pages/search_page.dart';
-import 'package:capstone_video_analyzer/pages/signIn_page.dart';
+import 'package:capstone_video_analyzer/pages/login_page.dart';
 import 'package:capstone_video_analyzer/services/auth_service.dart';
 import 'package:capstone_video_analyzer/services/constants.dart';
 import 'package:capstone_video_analyzer/services/router.dart';
@@ -7,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+
+import 'pages/user_library_page.dart';
 
 
 Future<void> main() async {
@@ -47,6 +48,6 @@ class AuthenticationWrapper extends StatelessWidget {
     if (firebaseUser != null) {
       return UserLibraryPage();
     }
-    return SignInPage();
+    return LoginPage();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:capstone_video_analyzer/main.dart';
 import 'package:capstone_video_analyzer/models/video_player_arguments.dart';
-import 'package:capstone_video_analyzer/pages/search_page.dart';
+import 'package:capstone_video_analyzer/pages/user_library_page.dart';
 import 'package:capstone_video_analyzer/pages/video_player_page.dart';
 import 'package:flutter/material.dart';
 
